@@ -1,0 +1,3 @@
+# Private Altdaten – niemals ins Repository
+*.csv
+happy-baby-import*
