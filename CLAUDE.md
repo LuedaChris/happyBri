@@ -90,10 +90,11 @@ Kommunikation und App-Oberfläche: Deutsch.
 (Goal 2 abgeschlossen am 01.11.2026, auf beiden Samsung-Handys vom Nutzer geprüft.)
 
 ### Goal 3 – Happy-Baby-Daten importieren
-- [ ] Import über eine Dateiauswahl in der App
-- [ ] Danach 5.539 Einträge: feeding 2.247, sleep 1.606, diaper 1.446, custom 171, memory 34, weight 29, height 6
-- [ ] Zweiter Import erzeugt keine Dubletten (Abgleich über id)
-- [ ] Stichprobe: Nachtschlaf 31.10.2026 20:00 bis 01.11.2026 03:24 korrekt
+- [x] Import über eine Dateiauswahl in der App
+- [x] Danach 5.539 Einträge: feeding 2.247, sleep 1.606, diaper 1.446, custom 171, memory 34, weight 29, height 6
+- [x] Zweiter Import erzeugt keine Dubletten (Abgleich über id)
+- [x] Stichprobe: Nachtschlaf 31.10.2026 20:00 bis 01.11.2026 03:24 korrekt
+(Goal 3 abgeschlossen am 01.11.2026, vom Nutzer auf dem Handy geprüft.)
 
 ### Goal 4 – Übersicht
 - [ ] Startbildschirm zeigt ohne Scrollen: letzte Fütterung, letzter Wickel („vor X Std Y Min“), Schlafstatus
@@ -107,5 +108,8 @@ Kommunikation und App-Oberfläche: Deutsch.
 ## Aktueller Stand
 - Goal 1: fertig und auf dem Handy abgenommen. Live unter https://luedachris.github.io/happyBri/ (GitHub Pages, Branch main).
 - Goal 2: fertig und auf beiden Handys abgenommen (`sync.js`, Firebase-Projekt `happybri-99e50`, Firebase-SDK 11.10.0 per CDN, vom Service Worker gecacht).
-- Nächstes: Goal 3 (Import). Hinweis: Import schreibt ~5.500 Dokumente (Free Tier: 20.000 Schreibzugriffe/Tag) – nur einmal ausführen, nicht beliebig oft testen. Beim Import `updatedAt` setzen, damit der Sync die Einträge auf das andere Handy bringt.
+- Goal 3: Code (`import.js`) ist geschrieben und hochgeladen. Am PC mit der echten CSV geprüft: 5.539 Einträge, Zahlen je Art stimmen, zweiter Import 0 neu, Stichprobe `hb-05528` (31.10. 20:00 → 01.11. 03:24, 443 Min) korrekt. Offen: echter Import auf einem Handy durch den Nutzer inkl. Cloud-Upload und Anzeige auf dem zweiten Handy.
+- Goal 4: Code (`overview.js`) ist geschrieben und hochgeladen, im Vorschau-Browser mit künstlichen Daten geprüft (Handy-Format). Offen: Prüfung auf dem Handy durch den Nutzer.
+- Übersicht-Entscheidungen: „Wach seit“ = Zeit seit Ende des letzten Schlafs (Wachfenster, nicht gespeichert). Tagessummen = heutiger Kalendertag ab 00:00; Schlaf über Mitternacht zählt nur mit dem Teil von heute; ganz heute liegende Schläge zählen mit der Netto-Dauer aus dem Eintrag. Zeitstrahl: 24 Std bis jetzt, Schlaf als Balken, Füttern/Wickeln als Punkte.
+- Import-Entscheidungen: Platzhalter `{babyName}` in Notizen wird zu „Bri“; importierte Einträge haben kein „eingetragen von“; Abgleich nur über `id` (auch gelöschte zählen als vorhanden). Import schreibt ~5.500 Dokumente in die Cloud (Free Tier: 20.000 Schreibzugriffe/Tag) – nur auf **einem** Handy ausführen, das andere bekommt sie per Sync.
 - Bekannte Grenze: Konflikte auf demselben Eintrag löst „zuletzt angekommen gewinnt“ (Firestore schreibt Offline-Änderungen blind); neue Einträge gehen nie verloren.

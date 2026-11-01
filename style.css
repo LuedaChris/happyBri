@@ -67,6 +67,32 @@ input, select, textarea { display: block; width: 100%; margin-top: 4px; padding:
 .who { text-align: center; color: var(--dim); font-size: 14px; margin-top: 24px; }
 .link.inline { display: inline; width: auto; padding: 4px; font-size: 14px; text-decoration: underline; }
 
+/* Übersicht */
+#status { background: var(--card); border-radius: 18px; padding: 4px 14px; margin-bottom: 12px; }
+.srow { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.srow + .srow { border-top: 1px solid var(--line); }
+.srow .ic { font-size: 24px; }
+.sbody { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sbody small { color: var(--dim); font-size: 13px; }
+.sbody b { font-size: 19px; font-weight: 600; }
+.srow .det { color: var(--dim); font-size: 14px; text-align: right; }
+#today { display: grid; grid-template-columns: 1fr 0.8fr 1.5fr; gap: 8px; }
+#today > div { background: var(--card); border-radius: 14px; padding: 10px 8px; text-align: center; display: flex; flex-direction: column; }
+#today b { font-size: 20px; white-space: nowrap; }
+#today small { color: var(--dim); font-size: 12px; }
+#timeline { background: var(--card); border-radius: 14px; padding: 10px 12px 6px; }
+.lane { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.lane .ic { width: 22px; text-align: center; font-size: 16px; }
+.track, .axis { position: relative; flex: 1; height: 22px; margin-right: 14px; }
+.track { background: var(--bg); border-radius: 6px; }
+.track u { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--line); }
+.blk { position: absolute; top: 3px; bottom: 3px; background: #5566c8; border-radius: 4px; }
+.dot { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; }
+.dot.feeding { background: #5fcf94; }
+.dot.diaper { background: #e0b04a; }
+.axis { height: 16px; }
+.axis span { position: absolute; transform: translateX(-50%); font-size: 12px; color: var(--dim); }
+
 #infoBody table { width: 100%; margin-bottom: 12px; border-collapse: collapse; }
 #infoBody td { padding: 4px 0; border-bottom: 1px solid var(--line); }
 #infoBody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }

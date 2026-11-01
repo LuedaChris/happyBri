@@ -67,6 +67,8 @@ function describe(e) {
 }
 
 function render() {
+  renderOverview();
+
   // Schlaf-Button
   const run = runningSleep();
   $('#sleepBtn').innerHTML = run

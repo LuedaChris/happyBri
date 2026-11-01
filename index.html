@@ -14,6 +14,8 @@
 <main>
   <h1>happyBri</h1>
 
+  <div id="status"></div>
+
   <button id="sleepBtn" class="big sleep"></button>
 
   <div class="grid">
@@ -22,6 +24,12 @@
     <button class="big diaper" data-quick="diaper">🧷<span>Wickeln</span></button>
     <button class="big more" data-quick="more">➕<span>Mehr</span></button>
   </div>
+
+  <h2>Heute</h2>
+  <div id="today"></div>
+
+  <h2>Letzte 24 Stunden</h2>
+  <div id="timeline"></div>
 
   <h2>Verlauf</h2>
   <div id="list"></div>
@@ -101,6 +109,7 @@
 <div id="toast" hidden><span id="toastText"></span><button id="toastUndo">Rückgängig</button></div>
 
 <script src="db.js"></script>
+<script src="overview.js"></script>
 <script src="app.js"></script>
 <script src="import.js"></script>
 <script type="module" src="sync.js"></script>
