@@ -165,6 +165,8 @@ Goal-8-Entscheidungen: Code in `meds.js`. Medikamentenliste in Firestore `settin
 - [ ] „Schlaf“ startet bzw. beendet direkt (mit Rückgängig), die anderen öffnen das passende Eingabefenster
 - [ ] Die Aktion läuft nur einmal (kein Wiederholen beim Neuladen)
 
+Goal-9-Entscheidungen: `shortcuts` im `manifest.webmanifest` → `./index.html?action=sleep|bottle|diaper|med`, Symbole `icons/sc-*.png` (96 px, per System.Drawing erzeugt). `app.js` liest `?action=` beim Laden, entfernt es sofort aus der Adresse und führt es über `runPendingAction()` erst nach dem Login aus (`sync.js`). Schlaf schaltet direkt um (mit Rückgängig), die anderen öffnen ihr Eingabefenster. Android übernimmt neue Shortcuts erst, wenn Chrome das Manifest der installierten App aktualisiert (kann bis zu einem Tag dauern; sonst App vom Startbildschirm entfernen und neu hinzufügen – Daten bleiben, sie liegen in IndexedDB/Firestore). Am PC geprüft (01.11.2026): alle vier Aktionen, Adresse danach ohne Parameter, zweiter Aufruf ohne Wirkung.
+
 #### Goal 10 – Übergabe-Zusammenfassung
 - [ ] „Mehr → Übergabe“ zeigt für „seit 6/12/24 Std“ oder eine gewählte Zeit: Flaschen, Beikost, Wickel, Schlaf, Medikamente, Temperaturen, Sonstiges, aktuellen Stand, nächsten Schlaf
 - [ ] Zahlen stimmen mit dem Verlauf überein

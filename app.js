@@ -179,6 +179,22 @@ document.querySelectorAll('[data-quick]').forEach(b => (b.onclick = () => {
   if (k === 'more') moreSheet();
 }));
 
+// ---------- App-Shortcuts (Langdruck aufs App-Symbol, siehe manifest.webmanifest) ----------
+// ?action=sleep|bottle|diaper|med wird sofort aus der Adresse entfernt (kein Wiederholen beim Neuladen)
+// und erst nach dem Login ausgeführt (sync.js ruft runPendingAction), sonst lägen die Fenster über dem Login.
+let pendingAction = new URLSearchParams(location.search).get('action');
+if (pendingAction) history.replaceState(null, '', location.pathname);
+window.runPendingAction = async () => {
+  const action = pendingAction;
+  pendingAction = null;
+  if (!action) return;
+  await window.entriesReady;
+  if (action === 'sleep') $('#sleepBtn').onclick();
+  else if (action === 'bottle') amountSheet('Flasche', 'Flasche', [120, 150, 180], 'ml');
+  else if (action === 'diaper') diaperSheet();
+  else if (action === 'med') medSheet();
+};
+
 // ---------- Schlaf starten/stoppen ----------
 $('#sleepBtn').onclick = async () => {
   const run = runningSleep();

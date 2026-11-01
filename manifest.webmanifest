@@ -12,5 +12,15 @@
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Schlaf starten / beenden", "short_name": "Schlaf", "url": "./index.html?action=sleep",
+      "icons": [{ "src": "icons/sc-sleep.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Flasche", "short_name": "Flasche", "url": "./index.html?action=bottle",
+      "icons": [{ "src": "icons/sc-bottle.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Wickeln", "short_name": "Wickeln", "url": "./index.html?action=diaper",
+      "icons": [{ "src": "icons/sc-diaper.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Medikament", "short_name": "Medikament", "url": "./index.html?action=med",
+      "icons": [{ "src": "icons/sc-med.png", "sizes": "96x96", "type": "image/png" }] }
   ]
 }

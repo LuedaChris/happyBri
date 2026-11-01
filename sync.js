@@ -137,6 +137,7 @@ onAuthStateChanged(auth, async user => {
   window.currentUserName = name;
   if (name) store.set('userName', name);
   show(null);
+  if (window.runPendingAction) window.runPendingAction(); // App-Shortcut erst nach dem Login ausführen
   $('#who').textContent = name ? `Angemeldet als ${name}` : 'Angemeldet';
   await startSync(user, name);
 });
