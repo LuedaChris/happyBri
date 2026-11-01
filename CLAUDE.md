@@ -82,11 +82,12 @@ Kommunikation und App-Oberfläche: Deutsch.
 (Goal 1 abgeschlossen am 01.11.2026, auf dem Samsung vom Nutzer geprüft.)
 
 ### Goal 2 – Sync zwischen beiden Handys
-- [ ] Login für beide; jeder Eintrag zeigt, wer ihn gemacht hat
-- [ ] Eintrag auf Handy A nach spätestens 10 Sek. auf Handy B sichtbar, ohne Neuladen
-- [ ] Offline-Einträge werden nachgereicht; gleichzeitige Einträge gehen nicht verloren
-- [ ] Ohne Login keine Daten sichtbar, auch nicht mit dem Link
-- [ ] Einträge aus Goal 1 bleiben erhalten
+- [x] Login für beide; jeder Eintrag zeigt, wer ihn gemacht hat
+- [x] Eintrag auf Handy A nach spätestens 10 Sek. auf Handy B sichtbar, ohne Neuladen
+- [x] Offline-Einträge werden nachgereicht; gleichzeitige Einträge gehen nicht verloren
+- [x] Ohne Login keine Daten sichtbar, auch nicht mit dem Link
+- [x] Einträge aus Goal 1 bleiben erhalten
+(Goal 2 abgeschlossen am 01.11.2026, auf beiden Samsung-Handys vom Nutzer geprüft.)
 
 ### Goal 3 – Happy-Baby-Daten importieren
 - [ ] Import über eine Dateiauswahl in der App
@@ -105,4 +106,6 @@ Kommunikation und App-Oberfläche: Deutsch.
 
 ## Aktueller Stand
 - Goal 1: fertig und auf dem Handy abgenommen. Live unter https://luedachris.github.io/happyBri/ (GitHub Pages, Branch main).
-- Nächstes: Goal 2 (Sync mit Firebase). Vorher klären: Firebase-Projekt anlegen, Login-Methode (Google), die zwei erlaubten Konten.
+- Goal 2: fertig und auf beiden Handys abgenommen (`sync.js`, Firebase-Projekt `happybri-99e50`, Firebase-SDK 11.10.0 per CDN, vom Service Worker gecacht).
+- Nächstes: Goal 3 (Import). Hinweis: Import schreibt ~5.500 Dokumente (Free Tier: 20.000 Schreibzugriffe/Tag) – nur einmal ausführen, nicht beliebig oft testen. Beim Import `updatedAt` setzen, damit der Sync die Einträge auf das andere Handy bringt.
+- Bekannte Grenze: Konflikte auf demselben Eintrag löst „zuletzt angekommen gewinnt“ (Firestore schreibt Offline-Änderungen blind); neue Einträge gehen nie verloren.
