@@ -97,9 +97,10 @@ Kommunikation und App-Oberfläche: Deutsch.
 (Goal 3 abgeschlossen am 01.11.2026, vom Nutzer auf dem Handy geprüft.)
 
 ### Goal 4 – Übersicht
-- [ ] Startbildschirm zeigt ohne Scrollen: letzte Fütterung, letzter Wickel („vor X Std Y Min“), Schlafstatus
-- [ ] Zeitstrahl der letzten 24 Stunden
-- [ ] Tagessummen: Fütterungen, Wickel, Schlaf gesamt
+- [x] Startbildschirm zeigt ohne Scrollen: letzte Fütterung, letzter Wickel („vor X Std Y Min“), Schlafstatus
+- [x] Zeitstrahl der letzten 24 Stunden
+- [x] Tagessummen: Fütterungen, Wickel, Schlaf gesamt
+(Goal 4 abgeschlossen am 01.11.2026, vom Nutzer auf dem Handy geprüft.)
 
 ### Goal 5 (optional) – Export
 - [ ] CSV-Export im selben Format wie die Importdatei, plus „eingetragen von“; Zeitraum wählbar
@@ -109,7 +110,8 @@ Kommunikation und App-Oberfläche: Deutsch.
 - Goal 1: fertig und auf dem Handy abgenommen. Live unter https://luedachris.github.io/happyBri/ (GitHub Pages, Branch main).
 - Goal 2: fertig und auf beiden Handys abgenommen (`sync.js`, Firebase-Projekt `happybri-99e50`, Firebase-SDK 11.10.0 per CDN, vom Service Worker gecacht).
 - Goal 3: Code (`import.js`) ist geschrieben und hochgeladen. Am PC mit der echten CSV geprüft: 5.539 Einträge, Zahlen je Art stimmen, zweiter Import 0 neu, Stichprobe `hb-05528` (31.10. 20:00 → 01.11. 03:24, 443 Min) korrekt. Offen: echter Import auf einem Handy durch den Nutzer inkl. Cloud-Upload und Anzeige auf dem zweiten Handy.
-- Goal 4: Code (`overview.js`) ist geschrieben und hochgeladen, im Vorschau-Browser mit künstlichen Daten geprüft (Handy-Format). Offen: Prüfung auf dem Handy durch den Nutzer.
+- Goal 4: fertig und auf dem Handy abgenommen (`overview.js`).
+- Nächstes: Goal 5 (optional, Export) – Nutzer entscheidet, ob es gebaut wird.
 - Übersicht-Entscheidungen: „Wach seit“ = Zeit seit Ende des letzten Schlafs (Wachfenster, nicht gespeichert). Tagessummen = heutiger Kalendertag ab 00:00; Schlaf über Mitternacht zählt nur mit dem Teil von heute; ganz heute liegende Schläge zählen mit der Netto-Dauer aus dem Eintrag. Zeitstrahl: 24 Std bis jetzt, Schlaf als Balken, Füttern/Wickeln als Punkte.
 - Import-Entscheidungen: Platzhalter `{babyName}` in Notizen wird zu „Bri“; importierte Einträge haben kein „eingetragen von“; Abgleich nur über `id` (auch gelöschte zählen als vorhanden). Import schreibt ~5.500 Dokumente in die Cloud (Free Tier: 20.000 Schreibzugriffe/Tag) – nur auf **einem** Handy ausführen, das andere bekommt sie per Sync.
 - Bekannte Grenze: Konflikte auf demselben Eintrag löst „zuletzt angekommen gewinnt“ (Firestore schreibt Offline-Änderungen blind); neue Einträge gehen nie verloren.
