@@ -35,7 +35,28 @@ function renderStatus() {
   $('#status').innerHTML =
     row('🍼', 'Letzte Fütterung', feed ? fmtAgo(minutesAgo(feed.start)) : '–', feed ? detail(feed) : '') +
     row('🧷', 'Letzter Wickel', diaper ? fmtAgo(minutesAgo(diaper.start)) : '–', diaper ? detail(diaper) : '') +
-    row('😴', 'Schlaf', sleepValue, sleepDetail);
+    row('😴', 'Schlaf', sleepValue, sleepDetail) +
+    predictionRow(row);
+}
+
+// Vorhersage des nächsten Schlafs (predict.js); Spanne = ± Median-Fehler aus dem Backtest der letzten 28 Tage
+function predictionRow(row) {
+  const p = predictNextSleep();
+  const clock = ms => fmtTime(toLocal(new Date(ms)));
+  if (p.state === 'ok') {
+    const range = p.spread != null ? `${clock(p.at - p.spread * 60000)}–${clock(p.at + p.spread * 60000)}` : '';
+    const late = p.spread != null && Date.now() > p.at + p.spread * 60000;
+    return row('🔮', `Nächster Schlaf · ${slotName(p.slot)}`, `ca. ${clock(p.at)}`, late ? 'überfällig' : range);
+  }
+  const hints = {
+    few: ['noch zu wenig Daten', `${p.points} von mind. 4 Einträgen`],
+    sleeping: ['nach dem Aufwachen', ''],
+    night: ['nachts keine Vorhersage', ''],
+    stale: ['keine aktuellen Schlafdaten', ''],
+    nodata: ['noch keine Schlafdaten', ''],
+  };
+  const [value, detail] = hints[p.state];
+  return row('🔮', p.slot ? `Nächster Schlaf · ${slotName(p.slot)}` : 'Nächster Schlaf', value, detail);
 }
 
 // Tagessummen für den heutigen Kalendertag (ab 00:00). Schlaf, der über Mitternacht geht, zählt nur mit dem Teil von heute.

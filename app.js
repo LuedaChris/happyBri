@@ -66,9 +66,10 @@ function describe(e) {
   return { main, sub };
 }
 
-function render() {
+function render(fromTimer = false) {
   renderOverview();
-  if (!$('#viewStats').hidden) renderStats();
+  // Statistik nur bei echten Änderungen neu zeichnen, nicht im 30-Sek.-Takt (sonst springen Eingabefelder zurück)
+  if (!fromTimer && !$('#viewStats').hidden) renderStats();
 
   // Schlaf-Button
   const run = runningSleep();
@@ -254,6 +255,6 @@ window.reloadEntries = reload; // sync.js ruft das auf, wenn Einträge vom ander
 $('#gate').hidden = false;
 setTimeout(() => { if (!window.Sync) $('#gateLoading').textContent = 'Anmeldung nicht erreichbar. Bitte einmal mit Internet öffnen.'; }, 8000);
 reload();
-setInterval(render, 30000); // laufende Schlafdauer aktualisieren
+setInterval(() => render(true), 30000); // laufende Schlafdauer und Vorhersage aktualisieren
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); // Browser soll Daten nicht von selbst löschen

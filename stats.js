@@ -229,6 +229,9 @@ function renderStats() {
   `Ø Wachfenster ${fmtDur(Math.round(periodAvg(rows, r => avg(r.wake))))} · Ø Nickerchen ${fmtDur(Math.round(periodAvg(rows, r => avg(r.naps))))}${avgNote()}
    <br>Dafür gibt es keine medizinischen Richtwerte. Als Orientierung (Apotheken Umschau): ab etwa 4 Monaten meist zwei Nickerchen am Tag, später nur noch eines am Nachmittag.`);
 
+  html += card('Schlafvorhersage prüfen', `<p>Backtest: Für jeden Schlaf der 28 Tage bis zu einem Stichtag sagt die App die Startzeit nur mit den Daten davor vorher und vergleicht sie mit der echten.</p>
+    <button class="big small" data-backtest>Backtest öffnen</button>`);
+
   const feedChart = (key, title, unit, cls) => card(`${title} (${unit}, ${per})`, barChart({
     labels, steps: COUNT_STEPS, fmtAxis: v => v, fmtLabel: v => Math.round(v),
     series: [{ cls, values: rows.map(r => perMin(r, key)) }],
@@ -259,7 +262,27 @@ $('#statsBody').onclick = ev => {
     saveProfile({ ...getProfile(), birth });
   }
   if (t.dataset.editbirth !== undefined) saveProfile({ ...getProfile(), birth: '' });
+  if (t.dataset.backtest !== undefined) openBacktest();
 };
+
+// Backtest der Schlafvorhersage (predict.js) im Dialog; Stichtag wählbar, Standard: jetzt
+function openBacktest() {
+  showInfo('Backtest Schlafvorhersage', `<label>Stichtag <input type="datetime-local" id="btAt" value="${nowLocal()}"></label>
+    <button class="big small ok" id="btRun">Rechnen</button><div id="btOut"></div>`);
+  const run = () => {
+    const at = $('#btAt').value;
+    if (!at) return;
+    const r = sleepBacktest(ts(at));
+    if (!r.n) { $('#btOut').innerHTML = '<p>Keine Vorhersage möglich: zu wenig Schlafdaten vor diesem Stichtag.</p>'; return; }
+    const rank = s => (s === 'night' ? 99 : Number(s.slice(3)));
+    const rows = Object.keys(r.bySlot).sort((a, b) => rank(a) - rank(b))
+      .map(s => `<tr><td>${slotName(s)}</td><td>${r.bySlot[s].length} · ${Math.round(spMedian(r.bySlot[s]))} Min</td></tr>`).join('');
+    $('#btOut').innerHTML = `<p><b>${r.n}</b> Vorhersagen · Median-Fehler <b>${Math.round(r.medianErr)} Min</b> · <b>${Math.round(r.within30 * 100)} %</b> innerhalb ±30 Min</p>
+      <table>${rows}</table><p class="who">Je Slot: Anzahl · Median-Fehler. Zeitraum: 28 Tage bis einschließlich Stichtag.</p>`;
+  };
+  $('#btRun').onclick = run;
+  run();
+}
 function saveProfile(p) {
   try { localStorage.setItem('profile', JSON.stringify(p)); } catch { /* egal */ }
   if (window.Sync && Sync.saveProfile) Sync.saveProfile(p);

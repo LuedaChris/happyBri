@@ -114,6 +114,37 @@ Kommunikation und App-Oberfläche: Deutsch.
 - [ ] Zahlen stimmen mit Happy Baby überein (Stichprobe: Ø Gesamtschlaf ca. 13 Std 17 Min, Gewicht 8,58 kg, Größe 76 cm)
 - [ ] Geburtsdatum liegt nicht im öffentlichen Code, sondern in Firestore (`settings/profile`) und lokal; wird beim ersten Öffnen der Statistik eingegeben
 
+### Goal 7 – Schlafvorhersage (vom Nutzer am 01.11.2026 gestartet, während Goal 6 noch auf die Handy-Abnahme wartet)
+Ziel: Die App sagt vorher, wann der nächste Schlaf beginnt (nächstes Nickerchen oder Zubettgehen), und zeigt das auf dem Startbildschirm. Gerechnet wird in der App selbst, ohne externen Dienst.
+- [ ] Startbildschirm zeigt Art, Uhrzeit und Zeitspanne des nächsten Schlafs
+- [ ] Vorhersage aktualisiert sich, sobald ein Schlaf endet oder nachgetragen wird
+- [ ] Unter 4 Datenpunkten erscheint ein Hinweis statt einer Zahl
+- [ ] Backtest ist in der App abrufbar
+- [ ] Prüfstein: Stichtag 01.11.2026 12:51, importierte Happy-Baby-Daten → 78 Vorhersagen, ca. 28 Min Median-Fehler, ca. 53 % innerhalb ±30 Min (weicht es deutlich ab, stimmt die Umsetzung nicht)
+
+Algorithmus (Vorgabe des Nutzers, auf den Happy-Baby-Daten getestet):
+1. Schlafeinträge nach Start sortieren. Wachfenster = Start eines Schlafs minus Ende des vorherigen.
+2. Nur Wachfenster vor einem Nickerchen und vor dem Zubettgehen zählen (Zubettgehen = Nachtschlaf direkt nach einem Nickerchen). Nächtliches Aufwachen (Nachtschlaf nach Nachtschlaf) ignorieren. Nur Wachfenster zwischen 20 Min und 8 Std.
+3. Slots: Nickerchen 1, 2, 3 … (gezählt ab dem Ende des letzten Nachtschlafs) und Nachtschlaf.
+4. Pro Slot die Einträge der 14 Tage vor dem Vorhersagezeitpunkt (mindestens 4). Startzeit per linearer Regression aus der Aufwachzeit des vorherigen Schlafs, Steigung auf 0 bis 1 begrenzt. Uhrzeiten vor 04:00 zählen als +24 Std. Fallback bei weniger als 3 verschiedenen Aufwachzeiten: Median-Startzeit des Slots.
+5. Nächster Slot: Nickerchen n+1, wenn es in den letzten 14 Tagen an mindestens der Hälfte der Tage vorkam, sonst Nachtschlaf.
+6. Zeitspanne: Vorhersage ± Median-Fehler aus dem Backtest.
+Backtest: Für jeden Schlaf der 28 Tage vor einem wählbaren Stichtag die Startzeit vorhersagen, nur mit Daten davor. Fehler = Abstand zwischen vorhergesagter und tatsächlicher Startzeit. Ausgabe: Anzahl, Median-Fehler, Anteil innerhalb ±30 Min.
+
+Plan (Umsetzung):
+- Neue Datei `predict.js`: Slots aus allen abgeschlossenen Schlafeinträgen bilden, Regression je Slot, `predictNextSleep()` für jetzt und `sleepBacktest(stichtag)`. Reines Rechnen auf `entries`, keine neuen Daten.
+- Startbildschirm: vierte Zeile in der Status-Karte „Nächster Schlaf“ (Art, ca. Uhrzeit, Spanne). Aktualisierung automatisch, weil jede Änderung `render()` auslöst.
+- Statistik: Karte „Schlafvorhersage prüfen“ mit Knopf; der Backtest läuft in einem Dialog mit wählbarem Stichtag (Standard: jetzt).
+- Prüfung zuerst am PC mit den importierten Daten gegen den Prüfstein, erst dann Oberfläche.
+Auslegungen (gegen den Prüfstein zu bestätigen):
+- „Vorheriger Schlaf“ = der direkt davor liegende Schlafeintrag jeder Art (beim 1. Nickerchen also das Ende des letzten Nachtschlaf-Abschnitts am Morgen).
+- Backtest (gegen den Prüfstein bestätigt): Zeitraum = 28 Tage bis **einschließlich** Stichtag (das Nickerchen um 12:51 zählt mit); „Daten davor“ = Slot-Einträge der 14 Tage vor dem **Beginn** des vorhergesagten Schlafs; es zählt der tatsächliche Slot des Schlafs. Ergebnis am PC: 78 Vorhersagen, Median-Fehler 28,0 Min, 52,6 % innerhalb ±30 Min (Nickerchen 1: 28, Nickerchen 2: 22, Nickerchen 3: 1, Zubettgehen: 27). Andere Auslegungen (Bezug Ende des vorherigen Schlafs, 14 Tage als feste 336 Std) weichen um weniger als 1 Min ab.
+- „Hälfte der Tage“ (Schritt 5) = Tage mit Schlafeinträgen im 14-Tage-Fenster; Tag = Kalendertag mit Tageswechsel um 04:00.
+- Während Bri schläft, zeigt der Startbildschirm keine Vorhersage („nach dem Aufwachen“). Liegt das letzte Aufwachen über 8 Std zurück, erscheint „keine aktuellen Schlafdaten“. Endete der letzte Nachtschlaf zwischen 18:00 und 04:00 (nächtliches Aufwachen), erscheint „nachts keine Vorhersage“ (sonst würde nachts ein „1. Nickerchen“ vorhergesagt). Unter 4 Slot-Einträgen: „noch zu wenig Daten · x von mind. 4 Einträgen“.
+- Untergrenze nur in der Anzeige (nicht im Backtest): vorhergesagter Beginn frühestens 20 Min nach dem Aufwachen. Grund: Mit Steigung < 1 kann die Regression nach sehr späten Nickerchen vor dem Aufwachen landen (echter Fall 30.10.: wach 21:18, Vorhersage 21:17, tatsächlich 21:35). Im Prüfstein-Zeitraum betrifft das 0 von 78 Vorhersagen.
+- Die Spanne auf dem Startbildschirm = ± Median-Fehler des Backtests mit Stichtag „jetzt“; ist die Spanne vorbei, steht „überfällig“.
+- Service Worker lädt beim Installieren mit `cache: 'reload'` (frisch vom Server statt aus dem Browser-Cache), damit neue Versionen zuverlässig ankommen.
+
 ## Aktueller Stand
 - Goal 6: Code (`stats.js`, `growth.js`) ist geschrieben, am PC mit den echten Daten geprüft (7 Karten, Tages- und Wochenansicht, Perzentile: Gewicht 8,58 kg mit 11,9 Monaten = P37, Größe 76 cm mit 10,9 Monaten = P91; WHO-Median passt zu den „Altersdurchschnitt“-Werten von Happy Baby). Offen: Test auf dem Handy, Geburtsdatum eingeben.
 - Goal-6-Entscheidungen: Bri ist ein Mädchen → WHO-Tabellen „girls“ (weight-for-age 0–5 J., length-for-age 0–2 J., als LMS-Werte 0–24 Monate in `growth.js`; Quelle who.int, am 01.11.2026 geladen). Durchschnitte ohne den laufenden Tag/die laufende Woche. „Altersdurchschnitt“ für Schlaf/Füttern wird bewusst nicht angezeigt (keine verlässliche deutsche Referenz). Schlaf über Mitternacht wird mit der Netto-Dauer anteilig auf die Tage verteilt. Wachfenster = Lücke zwischen Ende eines Schlafs und Beginn des nächsten (5 Min bis 12 Std).
