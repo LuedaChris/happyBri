@@ -116,6 +116,8 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .nap, .sw.nap { fill: #8fb4ff; background: #8fb4ff; }
 .night, .sw.night { fill: #5566c8; background: #5566c8; }
 .wake, .sw.wake { fill: #2a2f5c; background: #2a2f5c; }
+.chart .band { fill: rgba(143, 180, 255, .12); stroke: rgba(143, 180, 255, .45); stroke-dasharray: 4 3; stroke-width: 1; }
+.sw.band { background: rgba(143, 180, 255, .3); border: 1px dashed rgba(143, 180, 255, .7); box-sizing: border-box; }
 .wakebar, .sw.wakebar { fill: #a78bfa; background: #a78bfa; }
 .bottle, .sw.bottle { fill: #5fcf94; background: #5fcf94; }
 .solid, .sw.solid { fill: #e0b04a; background: #e0b04a; }

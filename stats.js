@@ -80,15 +80,16 @@ function niceScale(maxVal, steps) {
   return { step, max: Math.max(step, Math.ceil(maxVal / step) * step) };
 }
 
-function barChart({ labels, series, stacked = false, fmtAxis, fmtLabel, steps }) {
+function barChart({ labels, series, stacked = false, fmtAxis, fmtLabel, steps, band = null }) {
   const W = 340, H = 200, L = 40, R = 6, T = 16, B = 22, pw = W - L - R, ph = H - T - B, n = labels.length;
   const totals = labels.map((_, i) => (stacked ? series.reduce((s, x) => s + x.values[i], 0) : Math.max(...series.map(x => x.values[i]))));
-  const { max, step } = niceScale(Math.max(...totals, 0), steps);
+  const { max, step } = niceScale(Math.max(...totals, band ? band[1] : 0, 0), steps);
   const y = v => T + ph - (v / max) * ph;
   let svg = `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img">`;
   for (let v = 0; v <= max + 1e-9; v += step) {
     svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L - 5}" y="${y(v) + 3}" text-anchor="end">${fmtAxis(v)}</text>`;
   }
+  if (band) svg += `<rect class="band" x="${L}" y="${y(band[1])}" width="${pw}" height="${y(band[0]) - y(band[1])}"/>`; // Richtwert-Bereich
   const gw = pw / n;
   labels.forEach((lab, i) => {
     const cx = L + gw * i + gw / 2;
@@ -163,6 +164,21 @@ function growthChart(kind, list, birthMs, yStep) {
 const card = (title, body, foot = '') => `<section class="card"><h3>${title}</h3>${body}${foot ? `<p class="foot">${foot}</p>` : ''}</section>`;
 const legend = items => `<div class="legend">${items.map(([cls, text]) => `<span><i class="sw ${cls}"></i>${text}</span>`).join('')}</div>`;
 
+// Richtwert für den Gesamtschlaf je 24 Std inklusive Nickerchen, in Minuten.
+// Quellen: AASM-Konsens 2016 (Paruthi et al., J Clin Sleep Med 12(11):1549, von der American Academy of Pediatrics mitgetragen)
+// für 4 Monate bis 5 Jahre; für die ersten 3 Monate die Apotheken Umschau (14–17 Std „durchschnittlich“).
+// Das sind Spannen für gesunde Kinder, kein Sollwert: der Bedarf ist individuell verschieden.
+function sleepRef(m) {
+  if (m < 4) return { band: [14 * 60, 17 * 60], src: 'Apotheken Umschau' };
+  if (m < 12) return { band: [12 * 60, 16 * 60], src: 'AASM 2016' };
+  if (m < 36) return { band: [11 * 60, 14 * 60], src: 'AASM 2016' };
+  return { band: [10 * 60, 13 * 60], src: 'AASM 2016' };
+}
+const babyAgeMonths = () => {
+  const b = getProfile().birth;
+  return b ? (Date.now() - new Date(b + 'T00:00').getTime()) / (30.4375 * 864e5) : null;
+};
+
 // Durchschnitt über die abgeschlossenen Zeiträume (der laufende Tag bzw. die laufende Woche ist unvollständig)
 const periodAvg = (rows, pick) => avg(rows.slice(0, -1).map(pick).filter(v => v > 0));
 const avgNote = () => (statsMode === 'day' ? ' (ohne heute)' : ' (ohne laufende Woche)');
@@ -193,17 +209,25 @@ function renderStats() {
 
   if (statsMode === 'day') html += card('Schlafplan', sleepPlanChart(periods) + legend([['nap', 'Schlaf'], ['wake', 'Wach']]));
 
+  const ageM = babyAgeMonths(), ref = ageM != null ? sleepRef(ageM) : null;
+  const sleepAvg = Math.round(periodAvg(rows, r => (r.nap + r.night) / r.per));
+  let refText = '';
+  if (ref) {
+    const [lo, hi] = ref.band, verdict = !sleepAvg ? '' : sleepAvg < lo ? ' – darunter' : sleepAvg > hi ? ' – darüber' : ' – im Bereich';
+    refText = `<br>Richtwert mit ${Math.floor(ageM)} Monaten: ${lo / 60}–${hi / 60} Std pro Tag inkl. Nickerchen (${ref.src})${verdict}. Der Bedarf ist individuell verschieden.`;
+  }
   html += card(`Gesamtschlaf (${per})`, barChart({
-    labels, stacked: true, steps: TIME_STEPS, fmtAxis: fmtAxisTime, fmtLabel: fmtDur,
+    labels, stacked: true, steps: TIME_STEPS, fmtAxis: fmtAxisTime, fmtLabel: fmtDur, band: ref ? ref.band : null,
     series: [{ cls: 'night', values: rows.map(r => r.night / r.per) }, { cls: 'nap', values: rows.map(r => r.nap / r.per) }],
-  }) + legend([['nap', 'Nickerchen'], ['night', 'Nachtschlaf']]),
-  `Ø ${fmtDur(Math.round(periodAvg(rows, r => (r.nap + r.night) / r.per)))} · davon Nickerchen Ø ${fmtDur(Math.round(periodAvg(rows, r => r.nap / r.per)))}${avgNote()}`);
+  }) + legend([['nap', 'Nickerchen'], ['night', 'Nachtschlaf'], ...(ref ? [['band', 'Richtwert']] : [])]),
+  `Ø ${fmtDur(sleepAvg)} · davon Nickerchen Ø ${fmtDur(Math.round(periodAvg(rows, r => r.nap / r.per)))}${avgNote()}${refText}`);
 
   html += card('Wachfenster und Nickerchen', barChart({
     labels, steps: TIME_STEPS, fmtAxis: fmtAxisTime, fmtLabel: fmtDur,
     series: [{ cls: 'wakebar', values: rows.map(r => avg(r.wake)) }, { cls: 'nap', values: rows.map(r => avg(r.naps)) }],
   }) + legend([['wakebar', 'Ø Wachfenster'], ['nap', 'Ø Nickerchen']]),
-  `Ø Wachfenster ${fmtDur(Math.round(periodAvg(rows, r => avg(r.wake))))} · Ø Nickerchen ${fmtDur(Math.round(periodAvg(rows, r => avg(r.naps))))}${avgNote()}`);
+  `Ø Wachfenster ${fmtDur(Math.round(periodAvg(rows, r => avg(r.wake))))} · Ø Nickerchen ${fmtDur(Math.round(periodAvg(rows, r => avg(r.naps))))}${avgNote()}
+   <br>Dafür gibt es keine medizinischen Richtwerte. Als Orientierung (Apotheken Umschau): ab etwa 4 Monaten meist zwei Nickerchen am Tag, später nur noch eines am Nachmittag.`);
 
   const feedChart = (key, title, unit, cls) => card(`${title} (${unit}, ${per})`, barChart({
     labels, steps: COUNT_STEPS, fmtAxis: v => v, fmtLabel: v => Math.round(v),
