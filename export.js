@@ -88,7 +88,7 @@ function buildXlsx(list) {
     const kind = XLSX_COLS[i];
     if (kind === 'dt') return `<c r="${ref}" s="1"><v>${excelDate(v)}</v></c>`;
     if (kind === 'num') return `<c r="${ref}"><v>${Number(v)}</v></c>`;
-    return `<c r="${ref}"${style}  t="inlineStr"><is><t xml:space="preserve">${xmlText(v)}</t></is></c>`;
+    return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xmlText(v)}</t></is></c>`;
   };
   const sorted = [...list].sort((a, b) => a.start.localeCompare(b.start));
   let rows = `<row r="1">${CSV_HEAD.map((h, i) => `<c r="${colLetter(i)}1" s="2" t="inlineStr"><is><t>${h}</t></is></c>`).join('')}</row>`;
