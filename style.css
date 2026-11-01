@@ -141,6 +141,12 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .chart .medlbl { fill: #e0b04a; font-size: 9px; }
 .sw.medsw { background: #e0b04a; width: 3px; }
 
+/* Übergabe */
+.handover { background: var(--bg); border-radius: 12px; padding: 10px 12px; margin: 4px 0 12px; }
+.handover p { margin: 4px 0; font-size: 15px; }
+.handover p:first-child { color: var(--dim); font-size: 13px; }
+#toastUndo[hidden] { display: none; }
+
 #infoBody table { width: 100%; margin-bottom: 12px; border-collapse: collapse; }
 #infoBody td { padding: 4px 0; border-bottom: 1px solid var(--line); }
 #infoBody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }

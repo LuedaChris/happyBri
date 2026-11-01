@@ -172,6 +172,8 @@ Goal-9-Entscheidungen: `shortcuts` im `manifest.webmanifest` → `./index.html?a
 - [ ] Zahlen stimmen mit dem Verlauf überein
 - [ ] „Teilen“ öffnet das Android-Teilen-Menü (sonst Kopieren)
 
+Goal-10-Entscheidungen: Code in `handover.js`, erreichbar über „Mehr → Übergabe“. Zeitraum über 6/12/24 Std (Standard 12) oder „Seit“-Feld. Schlafsumme mit `aggregate()` aus `stats.js` (anteilige Netto-Dauer wie in der Statistik). Teilen per `navigator.share`, sonst Zwischenablage. Toast zeigt „Rückgängig“ nur noch, wenn es etwas rückgängig zu machen gibt. Am PC geprüft (01.11.2026, Zeitraum ab 00:00 gegen die CSV von Hand gezählt): 2 Flaschen/280 ml, 2× Beikost/260 g, 4 Wickel (Kacka 2, Beides 2), Schlaf 8 Std 45 Min – stimmt; Medikament- und Temperaturzeilen mit Person.
+
 #### Goal 11 – Bericht für den Kinderarzt
 - [ ] Fragen für den Arzt erfassen („Mehr → Frage für den Arzt“) und abhaken
 - [ ] Bericht (Statistik → „Bericht für den Kinderarzt“): Kopf mit Alter, Wachstum mit Perzentilen, Schlaf und Ernährung (14 Tage), Medikamente/Temperaturen (28 Tage), offene Fragen

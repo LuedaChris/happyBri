@@ -100,6 +100,7 @@ let toastTimer, toastUndo;
 function toast(text, undo) {
   $('#toastText').textContent = text;
   $('#toast').hidden = false;
+  $('#toastUndo').hidden = !undo; // "Rückgängig" nur zeigen, wenn es etwas rückgängig zu machen gibt
   toastUndo = undo;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => ($('#toast').hidden = true), 6000);
@@ -159,7 +160,9 @@ function moreSheet() {
       <button class="big" data-new="weight">⚖️ Gewicht</button><button class="big" data-new="height">📏 Größe</button>
       <button class="big" data-new="custom">📝 Sonstiges</button><button class="big" data-new="memory">⭐ Meilenstein</button>
       <button class="big" data-new="sleep">😴 Schlaf nachtragen</button><button class="big" data-new="feeding">🍼 Füttern nachtragen</button>
-      <button class="big" data-act="med">💊 Medikament</button><button class="big" data-act="temp">🌡️ Temperatur</button></div>`;
+      <button class="big" data-act="med">💊 Medikament</button><button class="big" data-act="temp">🌡️ Temperatur</button>
+      <button class="big" data-act="handover">📋 Übergabe</button></div>`;
+    body.querySelector('[data-act=handover]').onclick = () => { $('#quick').close(); openHandover(); };
     // Medikament und Temperatur haben eigene Eingabefenster (meds.js); das Zeitfeld zum Nachtragen bleibt dabei erhalten
     body.querySelector('[data-act=med]').onclick = () => { const t = $('#quickTime').value, touched = timeTouched; medSheet(); keepTime(t, touched); };
     body.querySelector('[data-act=temp]').onclick = () => { const t = $('#quickTime').value, touched = timeTouched; tempSheet(); keepTime(t, touched); };
