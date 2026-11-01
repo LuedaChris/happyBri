@@ -107,7 +107,17 @@ Kommunikation und App-Oberfläche: Deutsch.
 - [x] Öffnet sich in Google Sheets mit korrekten Umlauten und Uhrzeiten (mit Einschränkung: in der Sheets-App auf dem Handy zeigt die CSV vereinzelt `Â·` statt `·` – reine Darstellung, die Datei ist korrekt UTF-8; vom Nutzer akzeptiert. Uhrzeiten stimmen.)
 (Goal 5 abgeschlossen am 01.11.2026. Das .xlsx-Format im Export ist am Handy nicht abschließend geprüft.)
 
+### Goal 6 – Statistik (nach Abnahme der Goals 1–5 vom Nutzer gewünscht, orientiert an den „Trends“ von Happy Baby)
+- [ ] Zweiter Reiter „Statistik“ (Navigation unten: Start / Statistik); Umschalter Täglich (letzte 7 Tage) / Wöchentlich (8 Wochen, Tagesdurchschnitt)
+- [ ] Schlafplan (je Tag 00–24 Uhr, Schlaf/Wach), Gesamtschlaf (Nickerchen/Nachtschlaf), Wachfenster und Nickerchen, Flasche (ml), Beikost (g), jeweils mit Durchschnitt
+- [ ] Gewicht und Größe als Kurve mit WHO-Perzentilen (3/15/50/85/97) für Mädchen, eigene Messungen als Punkte, Perzentil der letzten Messung und Median im Alter
+- [ ] Zahlen stimmen mit Happy Baby überein (Stichprobe: Ø Gesamtschlaf ca. 13 Std 17 Min, Gewicht 8,58 kg, Größe 76 cm)
+- [ ] Geburtsdatum liegt nicht im öffentlichen Code, sondern in Firestore (`settings/profile`) und lokal; wird beim ersten Öffnen der Statistik eingegeben
+
 ## Aktueller Stand
+- Goal 6: Code (`stats.js`, `growth.js`) ist geschrieben, am PC mit den echten Daten geprüft (7 Karten, Tages- und Wochenansicht, Perzentile: Gewicht 8,58 kg mit 11,9 Monaten = P37, Größe 76 cm mit 10,9 Monaten = P91; WHO-Median passt zu den „Altersdurchschnitt“-Werten von Happy Baby). Offen: Test auf dem Handy, Geburtsdatum eingeben.
+- Goal-6-Entscheidungen: Bri ist ein Mädchen → WHO-Tabellen „girls“ (weight-for-age 0–5 J., length-for-age 0–2 J., als LMS-Werte 0–24 Monate in `growth.js`; Quelle who.int, am 01.11.2026 geladen). Durchschnitte ohne den laufenden Tag/die laufende Woche. „Altersdurchschnitt“ für Schlaf/Füttern wird bewusst nicht angezeigt (keine verlässliche deutsche Referenz). Schlaf über Mitternacht wird mit der Netto-Dauer anteilig auf die Tage verteilt. Wachfenster = Lücke zwischen Ende eines Schlafs und Beginn des nächsten (5 Min bis 12 Std).
+- Datenschutz-Hinweis: Das Repository ist öffentlich und enthält den Namen „Bri“ und (durch die WHO-Tabelle) das Geschlecht; Geburtsdatum, Einträge und Mailadressen sind nicht im Code.
 - Goal 1: fertig und auf dem Handy abgenommen. Live unter https://luedachris.github.io/happyBri/ (GitHub Pages, Branch main).
 - Goal 2: fertig und auf beiden Handys abgenommen (`sync.js`, Firebase-Projekt `happybri-99e50`, Firebase-SDK 11.10.0 per CDN, vom Service Worker gecacht).
 - Goal 3: Code (`import.js`) ist geschrieben und hochgeladen. Am PC mit der echten CSV geprüft: 5.539 Einträge, Zahlen je Art stimmen, zweiter Import 0 neu, Stichprobe `hb-05528` (31.10. 20:00 → 01.11. 03:24, 443 Min) korrekt. Offen: echter Import auf einem Handy durch den Nutzer inkl. Cloud-Upload und Anzeige auf dem zweiten Handy.

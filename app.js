@@ -68,6 +68,7 @@ function describe(e) {
 
 function render() {
   renderOverview();
+  if (!$('#viewStats').hidden) renderStats();
 
   // Schlaf-Button
   const run = runningSleep();

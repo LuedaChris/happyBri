@@ -12,6 +12,7 @@
 </head>
 <body>
 <main>
+<div id="viewHome">
   <h1>happyBri</h1>
 
   <div id="status"></div>
@@ -37,7 +38,18 @@
   <p class="who"><span id="who"></span> · <button class="link inline" id="logoutBtn">Abmelden</button></p>
   <p class="who"><button class="link inline" id="importBtn">Happy-Baby-Daten importieren</button> · <button class="link inline" id="exportBtn">Exportieren</button></p>
   <input type="file" id="importFile" hidden>
+</div>
+
+<div id="viewStats" hidden>
+  <h1>Statistik</h1>
+  <div id="statsBody"></div>
+</div>
 </main>
+
+<nav id="tabs">
+  <button data-view="home" class="on">🏠<span>Start</span></button>
+  <button data-view="stats">📊<span>Statistik</span></button>
+</nav>
 
 <!-- Anmeldung: verdeckt die App, bis jemand eingeloggt ist -->
 <div id="gate">
@@ -132,6 +144,8 @@
 <script src="app.js"></script>
 <script src="import.js"></script>
 <script src="export.js"></script>
+<script src="growth.js"></script>
+<script src="stats.js"></script>
 <script type="module" src="sync.js"></script>
 </body>
 </html>

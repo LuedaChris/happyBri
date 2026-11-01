@@ -27,6 +27,8 @@ const store = {
 };
 
 window.Sync = { ready: true };
+// Profil (Geburtsdatum) liegt nur in Firestore (settings/profile) und lokal, nicht im öffentlichen Code
+window.Sync.saveProfile = p => { if (auth.currentUser) setDoc(doc(fs, 'settings', 'profile'), p).catch(err => console.error('Sync-Fehler', err)); };
 let stopListening = null;
 
 // Jede lokale Änderung geht zusätzlich an Firestore (nicht abwarten: offline wartet sie in der Warteschlange).
@@ -88,6 +90,10 @@ async function ensureName(user) {
 }
 
 async function startSync(user, name) {
+  getDoc(doc(fs, 'settings', 'profile')).then(snap => {
+    if (snap.exists()) { store.set('profile', JSON.stringify(snap.data())); if (window.onProfile) window.onProfile(); }
+  }).catch(() => {}); // offline: das lokal gemerkte Profil gilt weiter
+
   // Einmalig: Einträge, die vor dem Login entstanden sind, bekommen den Namen und gehen in die Cloud.
   if (!store.get('pushed:' + user.uid)) {
     for (const e of await DB.allRaw()) {
