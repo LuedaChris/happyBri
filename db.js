@@ -33,6 +33,7 @@ const DB = (() => {
     },
     // Änderung aus der Cloud: unverändert speichern (Zeitstempel bleibt, nichts wird zurückgeschickt).
     putRaw: entry => run('readwrite', s => s.put(entry)),
+    putMany: list => run('readwrite', s => { list.forEach(e => s.put(e)); }),
     onLocalChange: null,
   };
   return db;

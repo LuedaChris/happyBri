@@ -67,6 +67,10 @@ input, select, textarea { display: block; width: 100%; margin-top: 4px; padding:
 .who { text-align: center; color: var(--dim); font-size: 14px; margin-top: 24px; }
 .link.inline { display: inline; width: auto; padding: 4px; font-size: 14px; text-decoration: underline; }
 
+#infoBody table { width: 100%; margin-bottom: 12px; border-collapse: collapse; }
+#infoBody td { padding: 4px 0; border-bottom: 1px solid var(--line); }
+#infoBody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+
 #toast { position: fixed; left: 16px; right: 16px; bottom: calc(20px + env(safe-area-inset-bottom)); max-width: 528px; margin: 0 auto;
   background: #2b3245; border-radius: 14px; padding: 8px 8px 8px 16px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
 #toast[hidden] { display: none; }

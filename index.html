@@ -27,6 +27,8 @@
   <div id="list"></div>
   <button id="moreBtn" class="link" hidden>Ältere Einträge laden</button>
   <p class="who"><span id="who"></span> · <button class="link inline" id="logoutBtn">Abmelden</button></p>
+  <p class="who"><button class="link inline" id="importBtn">Happy-Baby-Daten importieren</button></p>
+  <input type="file" id="importFile" hidden>
 </main>
 
 <!-- Anmeldung: verdeckt die App, bis jemand eingeloggt ist -->
@@ -90,10 +92,17 @@
   </form>
 </dialog>
 
+<dialog id="info">
+  <h3 id="infoTitle"></h3>
+  <div id="infoBody"></div>
+  <button class="big small ok" id="infoClose">OK</button>
+</dialog>
+
 <div id="toast" hidden><span id="toastText"></span><button id="toastUndo">Rückgängig</button></div>
 
 <script src="db.js"></script>
 <script src="app.js"></script>
+<script src="import.js"></script>
 <script type="module" src="sync.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/fireba
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut }
   from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-  collection, doc, setDoc, getDoc, query, where, onSnapshot }
+  collection, doc, setDoc, getDoc, query, where, onSnapshot, writeBatch }
   from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 
 const app = initializeApp({
@@ -32,6 +32,17 @@ let stopListening = null;
 // Jede lokale Änderung geht zusätzlich an Firestore (nicht abwarten: offline wartet sie in der Warteschlange).
 DB.onLocalChange = entry => {
   if (auth.currentUser) setDoc(doc(entries, entry.id), entry).catch(err => console.error('Sync-Fehler', err));
+};
+
+// Viele Einträge auf einmal hochladen (z. B. Import): in Paketen zu 400, Firestore erlaubt höchstens 500 je Paket.
+window.Sync.pushMany = async (list, onProgress) => {
+  if (!auth.currentUser) throw new Error('nicht angemeldet');
+  for (let i = 0; i < list.length; i += 400) {
+    const batch = writeBatch(fs);
+    list.slice(i, i + 400).forEach(e => batch.set(doc(entries, e.id), e));
+    await batch.commit();
+    onProgress(Math.min(i + 400, list.length));
+  }
 };
 
 const show = which => {
