@@ -35,7 +35,7 @@
   <div id="list"></div>
   <button id="moreBtn" class="link" hidden>Ältere Einträge laden</button>
   <p class="who"><span id="who"></span> · <button class="link inline" id="logoutBtn">Abmelden</button></p>
-  <p class="who"><button class="link inline" id="importBtn">Happy-Baby-Daten importieren</button></p>
+  <p class="who"><button class="link inline" id="importBtn">Happy-Baby-Daten importieren</button> · <button class="link inline" id="exportBtn">Exportieren</button></p>
   <input type="file" id="importFile" hidden>
 </main>
 
@@ -100,6 +100,19 @@
   </form>
 </dialog>
 
+<dialog id="exportDlg">
+  <h3>Daten exportieren</h3>
+  <div class="row">
+    <label>Von <input type="date" id="exFrom"></label>
+    <label>Bis <input type="date" id="exTo"></label>
+  </div>
+  <p id="exCount" class="who"></p>
+  <div class="row">
+    <button type="button" class="big small" id="exCancel">Abbrechen</button>
+    <button type="button" class="big small ok" id="exGo">Exportieren</button>
+  </div>
+</dialog>
+
 <dialog id="info">
   <h3 id="infoTitle"></h3>
   <div id="infoBody"></div>
@@ -112,6 +125,7 @@
 <script src="overview.js"></script>
 <script src="app.js"></script>
 <script src="import.js"></script>
+<script src="export.js"></script>
 <script type="module" src="sync.js"></script>
 </body>
 </html>
