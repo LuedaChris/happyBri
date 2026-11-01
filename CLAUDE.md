@@ -103,14 +103,16 @@ Kommunikation und App-Oberfläche: Deutsch.
 (Goal 4 abgeschlossen am 01.11.2026, vom Nutzer auf dem Handy geprüft.)
 
 ### Goal 5 (optional) – Export
-- [ ] CSV-Export im selben Format wie die Importdatei, plus „eingetragen von“; Zeitraum wählbar
-- [ ] Öffnet sich in Google Sheets mit korrekten Umlauten und Uhrzeiten
+- [x] CSV-Export im selben Format wie die Importdatei, plus „eingetragen von“; Zeitraum wählbar
+- [x] Öffnet sich in Google Sheets mit korrekten Umlauten und Uhrzeiten (mit Einschränkung: in der Sheets-App auf dem Handy zeigt die CSV vereinzelt `Â·` statt `·` – reine Darstellung, die Datei ist korrekt UTF-8; vom Nutzer akzeptiert. Uhrzeiten stimmen.)
+(Goal 5 abgeschlossen am 01.11.2026. Das .xlsx-Format im Export ist am Handy nicht abschließend geprüft.)
 
 ## Aktueller Stand
 - Goal 1: fertig und auf dem Handy abgenommen. Live unter https://luedachris.github.io/happyBri/ (GitHub Pages, Branch main).
 - Goal 2: fertig und auf beiden Handys abgenommen (`sync.js`, Firebase-Projekt `happybri-99e50`, Firebase-SDK 11.10.0 per CDN, vom Service Worker gecacht).
 - Goal 3: Code (`import.js`) ist geschrieben und hochgeladen. Am PC mit der echten CSV geprüft: 5.539 Einträge, Zahlen je Art stimmen, zweiter Import 0 neu, Stichprobe `hb-05528` (31.10. 20:00 → 01.11. 03:24, 443 Min) korrekt. Offen: echter Import auf einem Handy durch den Nutzer inkl. Cloud-Upload und Anzeige auf dem zweiten Handy.
 - Goal 4: fertig und auf dem Handy abgenommen (`overview.js`).
+- Alle fünf Goals sind abgenommen (01.11.2026). Neue Arbeit nur nach Absprache; jede Änderung an App-Dateien braucht eine höhere `CACHE`-Nummer in `sw.js`.
 - Goal 5: Code (`export.js`) ist geschrieben und hochgeladen. Am PC geprüft: Rundlauf Export → Import-Parser ohne Abweichung (inkl. Komma, Anführungszeichen, Zeilenumbruch, Umlaute); CSV hat BOM, gleiche Spalten wie der Import plus `eingetragen_von`. Offen: Download auf dem Handy und Öffnen in Google Sheets durch den Nutzer.
 - Goal 5, Befund vom Handy-Test (01.11.2026): CSV öffnet sich in der Google-Sheets-App mit kaputten Zeichen (`ï»¿id` für das BOM, `Â·` für „·“). Die Datei ist korrekt UTF-8; die App liest sie als Latin-1. Zeiten kamen als Datum+Uhrzeit korrekt an. Gegenmaßnahme: zusätzliches Format **.xlsx** im Export-Dialog (Standard), selbst geschriebenes ZIP ohne Bibliothek, echte Datums-/Zahlenzellen. Am PC geprüft (ZIP-Prüfsummen, XML, Werte); offen: Öffnen der .xlsx in Sheets auf dem Handy. Die CSV bleibt für Sicherung/Re-Import (am PC über Sheets „Datei → Importieren“ sollte sie korrekt sein).
 - Export-Entscheidungen: Zeitraum filtert nach Start-Datum (beide Tage inklusive); gelöschte Einträge fehlen; sortiert nach Start aufsteigend; Zeiten bleiben im Format `2026-11-01T03:37` (wie im Import, damit die Datei wieder importierbar ist). Falls Google Sheets die Uhrzeiten oder Dezimalpunkte (z. B. 3.25 kg) falsch zeigt, ist das die erste Stelle zum Nachbessern.
