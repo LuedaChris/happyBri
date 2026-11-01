@@ -41,6 +41,7 @@ function renderStatus() {
 
 // Vorhersage des nächsten Schlafs (predict.js); Spanne = ± Median-Fehler aus dem Backtest der letzten 28 Tage
 function predictionRow(row) {
+  if (typeof predictNextSleep !== 'function') return ''; // predict.js fehlt (z. B. halb aktualisierter Cache)
   const p = predictNextSleep();
   const clock = ms => fmtTime(toLocal(new Date(ms)));
   if (p.state === 'ok') {
