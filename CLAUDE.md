@@ -116,11 +116,12 @@ Kommunikation und App-Oberfläche: Deutsch.
 
 ### Goal 7 – Schlafvorhersage (vom Nutzer am 01.11.2026 gestartet, während Goal 6 noch auf die Handy-Abnahme wartet)
 Ziel: Die App sagt vorher, wann der nächste Schlaf beginnt (nächstes Nickerchen oder Zubettgehen), und zeigt das auf dem Startbildschirm. Gerechnet wird in der App selbst, ohne externen Dienst.
-- [ ] Startbildschirm zeigt Art, Uhrzeit und Zeitspanne des nächsten Schlafs
-- [ ] Vorhersage aktualisiert sich, sobald ein Schlaf endet oder nachgetragen wird
-- [ ] Unter 4 Datenpunkten erscheint ein Hinweis statt einer Zahl
-- [ ] Backtest ist in der App abrufbar
-- [ ] Prüfstein: Stichtag 01.11.2026 12:51, importierte Happy-Baby-Daten → 78 Vorhersagen, ca. 28 Min Median-Fehler, ca. 53 % innerhalb ±30 Min (weicht es deutlich ab, stimmt die Umsetzung nicht)
+- [ ] Startbildschirm zeigt Art, Uhrzeit und Zeitspanne des nächsten Schlafs (Handy-Test tagsüber steht aus, nachts zeigt die App bewusst keine Vorhersage)
+- [ ] Vorhersage aktualisiert sich, sobald ein Schlaf endet oder nachgetragen wird (Schlaf beenden: auf dem Handy ok; Nachtragen: Test steht aus)
+- [ ] Unter 4 Datenpunkten erscheint ein Hinweis statt einer Zahl (am PC geprüft, auf dem Handy mit echten Daten kaum herbeizuführen)
+- [x] Backtest ist in der App abrufbar
+- [x] Prüfstein: Stichtag 01.11.2026 12:51, importierte Happy-Baby-Daten → 78 Vorhersagen, ca. 28 Min Median-Fehler, ca. 53 % innerhalb ±30 Min (am PC und auf dem Handy bestätigt: 78 / 28 Min / 53 %)
+(Stand 01.11.2026 nachts: hochgeladen; App-Update kam laut Nutzer ohne Probleme an. Tests 2 und 4 macht der Nutzer am Folgetag.)
 
 Algorithmus (Vorgabe des Nutzers, auf den Happy-Baby-Daten getestet):
 1. Schlafeinträge nach Start sortieren. Wachfenster = Start eines Schlafs minus Ende des vorherigen.
