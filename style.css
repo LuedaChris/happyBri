@@ -131,6 +131,16 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .sw.l50 { background: #b9d9ff; } .sw.lpc { background: #6a74c9; } .sw.pt { background: #ff8fb8; border-radius: 50%; width: 9px; }
 #toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
 
+/* Medikamente & Fieber */
+.srow.tap { cursor: pointer; }
+.big.med { margin-bottom: 10px; min-height: 76px; padding: 8px 12px; }
+.big.med span { font-size: 15px; font-weight: 400; opacity: .85; }
+.big.med small { font-size: 14px; font-weight: 600; color: #ffd27a; }
+#infoBody h3 { margin: 14px 0 8px; font-size: 16px; }
+.chart .medmark { stroke: #e0b04a; stroke-width: 1.2; stroke-dasharray: 3 3; }
+.chart .medlbl { fill: #e0b04a; font-size: 9px; }
+.sw.medsw { background: #e0b04a; width: 3px; }
+
 #infoBody table { width: 100%; margin-bottom: 12px; border-collapse: collapse; }
 #infoBody td { padding: 4px 0; border-bottom: 1px solid var(--line); }
 #infoBody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }

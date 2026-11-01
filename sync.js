@@ -29,7 +29,9 @@ const store = {
 window.Sync = { ready: true };
 // Profil (Geburtsdatum) liegt nur in Firestore (settings/profile) und lokal, nicht im öffentlichen Code
 window.Sync.saveProfile = p => { if (auth.currentUser) setDoc(doc(fs, 'settings', 'profile'), p).catch(err => console.error('Sync-Fehler', err)); };
-let stopListening = null;
+// Medikamentenliste (meds.js) ebenso nur in Firestore (settings/meds) und lokal
+window.Sync.saveMeds = items => { if (auth.currentUser) setDoc(doc(fs, 'settings', 'meds'), { items }).catch(err => console.error('Sync-Fehler', err)); };
+let stopListening = null, stopMeds = null;
 
 // Jede lokale Änderung geht zusätzlich an Firestore (nicht abwarten: offline wartet sie in der Warteschlange).
 DB.onLocalChange = entry => {
@@ -94,6 +96,13 @@ async function startSync(user, name) {
     if (snap.exists()) { store.set('profile', JSON.stringify(snap.data())); if (window.onProfile) window.onProfile(); }
   }).catch(() => {}); // offline: das lokal gemerkte Profil gilt weiter
 
+  // Medikamentenliste live halten (Änderung auf dem anderen Handy kommt sofort an).
+  // Vorbelegung nur, wenn der Server sicher noch keine Liste hat (nicht bei Daten nur aus dem Offline-Cache).
+  stopMeds = onSnapshot(doc(fs, 'settings', 'meds'), snap => {
+    if (snap.exists()) { store.set('meds', JSON.stringify(snap.data().items || [])); if (window.onMeds) window.onMeds(); }
+    else if (!snap.metadata.fromCache && window.seedMeds) window.seedMeds();
+  }, err => console.error('Sync-Fehler', err));
+
   // Einmalig: Einträge, die vor dem Login entstanden sind, bekommen den Namen und gehen in die Cloud.
   if (!store.get('pushed:' + user.uid)) {
     for (const e of await DB.allRaw()) {
@@ -122,6 +131,7 @@ async function startSync(user, name) {
 
 onAuthStateChanged(auth, async user => {
   if (stopListening) { stopListening(); stopListening = null; }
+  if (stopMeds) { stopMeds(); stopMeds = null; }
   if (!user) { window.currentUserName = null; show('loginForm'); return; }
   const name = await ensureName(user);
   window.currentUserName = name;

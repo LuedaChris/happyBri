@@ -36,7 +36,8 @@ function renderStatus() {
     row('🍼', 'Letzte Fütterung', feed ? fmtAgo(minutesAgo(feed.start)) : '–', feed ? detail(feed) : '') +
     row('🧷', 'Letzter Wickel', diaper ? fmtAgo(minutesAgo(diaper.start)) : '–', diaper ? detail(diaper) : '') +
     row('😴', 'Schlaf', sleepValue, sleepDetail) +
-    predictionRow(row);
+    predictionRow(row) +
+    (typeof medsRow === 'function' ? medsRow() : ''); // nur sichtbar, wenn in den letzten 24 Std Medikamente/Fieber erfasst wurden
 }
 
 // Vorhersage des nächsten Schlafs (predict.js); Spanne = ± Median-Fehler aus dem Backtest der letzten 28 Tage

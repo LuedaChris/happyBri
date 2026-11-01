@@ -10,6 +10,8 @@ const TYPES = {
   memory:  { icon: '⭐', unit: '',   titles: [] },
   weight:  { icon: '⚖️', unit: 'kg', titles: ['Gewicht'] },
   height:  { icon: '📏', unit: 'cm', titles: ['Größe'] },
+  medication:  { icon: '💊', unit: '',   titles: [] },            // Titel = Medikament, substance = Wirkstoff (meds.js)
+  temperature: { icon: '🌡️', unit: '°C', titles: ['Temperatur'] },
 };
 
 // ---------- Zeit-Helfer (Ortszeit als "YYYY-MM-DDTHH:mm", wie in der CSV) ----------
@@ -57,11 +59,12 @@ async function save(entry, message) {
 // ---------- Anzeige ----------
 function describe(e) {
   let main = e.title || TYPES[e.type].titles[0] || e.type;
-  if (e.amount != null) main += ` · ${e.amount} ${e.unit || ''}`;
+  if (e.amount != null) main += ` · ${e.amount.toLocaleString('de-DE', { maximumFractionDigits: 2 })} ${e.unit || ''}`;
   let sub = '';
   if (e.type === 'sleep') {
     sub = e.end ? fmtDur(e.durationMin ?? minutesBetween(e.start, e.end)) + ` (bis ${fmtTime(e.end)})` : 'läuft …';
   } else if (e.note) sub = e.note;
+  else if (e.substance) sub = e.substance;
   if (e.createdBy) sub = sub ? `${sub} · ${e.createdBy}` : e.createdBy;
   return { main, sub };
 }
@@ -118,6 +121,8 @@ function openQuick(title, buildBody) {
   $('#quick').showModal();
 }
 $('#quickTime').oninput = () => (timeTouched = true);
+// Beim Wechsel von "Mehr" in ein anderes Eingabefenster eine schon geänderte Zeit übernehmen
+const keepTime = (value, touched) => { if (touched) { $('#quickTime').value = value; timeTouched = true; } };
 $('#quickClose').onclick = () => $('#quick').close();
 $('#quick').addEventListener('click', e => { if (e.target === $('#quick')) $('#quick').close(); });
 
@@ -153,7 +158,11 @@ function moreSheet() {
     body.innerHTML = `<div class="grid">
       <button class="big" data-new="weight">⚖️ Gewicht</button><button class="big" data-new="height">📏 Größe</button>
       <button class="big" data-new="custom">📝 Sonstiges</button><button class="big" data-new="memory">⭐ Meilenstein</button>
-      <button class="big" data-new="sleep">😴 Schlaf nachtragen</button><button class="big" data-new="feeding">🍼 Füttern nachtragen</button></div>`;
+      <button class="big" data-new="sleep">😴 Schlaf nachtragen</button><button class="big" data-new="feeding">🍼 Füttern nachtragen</button>
+      <button class="big" data-act="med">💊 Medikament</button><button class="big" data-act="temp">🌡️ Temperatur</button></div>`;
+    // Medikament und Temperatur haben eigene Eingabefenster (meds.js); das Zeitfeld zum Nachtragen bleibt dabei erhalten
+    body.querySelector('[data-act=med]').onclick = () => { const t = $('#quickTime').value, touched = timeTouched; medSheet(); keepTime(t, touched); };
+    body.querySelector('[data-act=temp]').onclick = () => { const t = $('#quickTime').value, touched = timeTouched; tempSheet(); keepTime(t, touched); };
     body.querySelectorAll('[data-new]').forEach(b => (b.onclick = () => {
       const start = quickStart();
       $('#quick').close();
@@ -206,7 +215,8 @@ function openEdit(entry, isNew = false) {
 
 function syncTypeFields() {
   const t = f('fType').value;
-  f('titles').innerHTML = TYPES[t].titles.map(x => `<option value="${esc(x)}">`).join('');
+  const titles = t === 'medication' ? (getMeds() || []).map(m => m.name) : TYPES[t].titles;
+  f('titles').innerHTML = titles.map(x => `<option value="${esc(x)}">`).join('');
   f('fRatingWrap').hidden = t !== 'sleep';
 }
 f('fType').onchange = () => {
@@ -254,7 +264,7 @@ $('#moreBtn').onclick = () => { shown += 40; render(); };
 window.reloadEntries = reload; // sync.js ruft das auf, wenn Einträge vom anderen Handy angekommen sind
 $('#gate').hidden = false;
 setTimeout(() => { if (!window.Sync) $('#gateLoading').textContent = 'Anmeldung nicht erreichbar. Bitte einmal mit Internet öffnen.'; }, 8000);
-reload();
+window.entriesReady = reload(); // erstes Laden; andere Teile (z. B. meds.js) warten darauf
 setInterval(() => render(true), 30000); // laufende Schlafdauer und Vorhersage aktualisieren
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); // Browser soll Daten nicht von selbst löschen

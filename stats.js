@@ -207,6 +207,8 @@ function renderStats() {
   const sleepTot = rows.map(r => (r.nap + r.night) / r.per);
   let html = `<div class="seg"><button data-mode="day" class="${statsMode === 'day' ? 'on' : ''}">Täglich</button><button data-mode="week" class="${statsMode === 'week' ? 'on' : ''}">Wöchentlich</button></div>`;
 
+  html += feverCard(); // nur, wenn in den letzten 14 Tagen Temperaturen oder Medikamente erfasst wurden (meds.js)
+
   if (statsMode === 'day') html += card('Schlafplan', sleepPlanChart(periods) + legend([['nap', 'Schlaf'], ['wake', 'Wach']]));
 
   const ageM = babyAgeMonths(), ref = ageM != null ? sleepRef(ageM) : null;

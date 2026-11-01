@@ -39,7 +39,7 @@ Kommunikation und App-Oberfläche: Deutsch.
 | Feld | Typ | Bedeutung |
 |---|---|---|
 | `id` | string | Neue Einträge: UUID; importierte: CSV-`id` (`hb-…`) |
-| `type` | string | feeding, sleep, diaper, custom, memory, weight, height |
+| `type` | string | feeding, sleep, diaper, custom, memory, weight, height; ab Goal 8 auch medication, temperature |
 | `title` | string | Unterart/Bezeichnung (Flasche, Pipi, Nachtschlaf, freier Text …) |
 | `start` | string | Ortszeit `YYYY-MM-DDTHH:mm` (wie CSV) |
 | `end` | string\|null | Ortszeit; `null` = läuft noch (laufender Schlaf) |
@@ -53,6 +53,7 @@ Kommunikation und App-Oberfläche: Deutsch.
 | `detailsRaw` | string\|null | Originaltext aus Happy Baby |
 | `source` | string | `app` oder `happy-baby` |
 | `createdBy` | string\|null | ab Goal 2: wer den Eintrag gemacht hat |
+| `substance` | string\|null | ab Goal 8, nur bei `medication`: Wirkstoff (z. B. Ibuprofen); wird **nicht** exportiert |
 | `createdAt` / `updatedAt` | number | Zeitstempel (ms), für Sync/Konflikte |
 | `deleted` | boolean | Löschen als Markierung („Tombstone“), damit Löschungen sich ab Goal 2 synchronisieren |
 
@@ -145,6 +146,38 @@ Auslegungen (gegen den Prüfstein zu bestätigen):
 - Untergrenze nur in der Anzeige (nicht im Backtest): vorhergesagter Beginn frühestens 20 Min nach dem Aufwachen. Grund: Mit Steigung < 1 kann die Regression nach sehr späten Nickerchen vor dem Aufwachen landen (echter Fall 30.10.: wach 21:18, Vorhersage 21:17, tatsächlich 21:35). Im Prüfstein-Zeitraum betrifft das 0 von 78 Vorhersagen.
 - Die Spanne auf dem Startbildschirm = ± Median-Fehler des Backtests mit Stichtag „jetzt“; ist die Spanne vorbei, steht „überfällig“.
 - Service Worker lädt beim Installieren mit `cache: 'reload'` (frisch vom Server statt aus dem Browser-Cache), damit neue Versionen zuverlässig ankommen.
+
+### Goals 8–12 – Zusatzfunktionen (vom Nutzer am 01.11.2026 nachts beauftragt: „so viel wie möglich der Reihe nach“)
+Abweichung von „immer nur ein Goal“: ausdrücklich gewünscht. Jedes Goal wird einzeln gebaut, am PC geprüft, committed und **ohne Rückfrage gepusht** (Freigabe des Nutzers). Handy-Abnahme folgt gesammelt.
+
+#### Goal 8 – Medikamente & Fieber
+- [ ] Medikamentenliste (Name, Wirkstoff, Dosis, Einheit, Mindestabstand, max. Gaben/24 Std) anlegen/ändern, auf beiden Handys gleich
+- [ ] Gabe erfassen über „Mehr → Medikament“ mit einem Tap aufs Medikament; Nachtragen über das Zeitfeld
+- [ ] „wieder ab …“ je Wirkstoff (auch über verschiedene Präparate); Warnung bei zu früher Gabe oder erreichter Höchstzahl (nicht blockierend)
+- [ ] Temperatur erfassen (°C, Komma erlaubt)
+- [ ] Startbildschirm-Zeile „Medikamente & Fieber“ nur, wenn in den letzten 24 Std etwas erfasst wurde
+- [ ] Statistik-Karte „Fieber & Medikamente“: Temperaturverlauf 7 Tage mit Markierungen der Gaben
+
+Goal-8-Entscheidungen: Code in `meds.js`. Medikamentenliste in Firestore `settings/meds` ({ items: [{ name, substance, dose, unit, minHours, maxPerDay }] }), live per `onSnapshot`, lokal in `localStorage.meds`. **Die App gibt keine Dosis, keine Abstände und keine Höchstzahlen vor**; ohne Angaben zeigt sie nur „zuletzt“. Regeln gelten je Wirkstoff über alle Präparate (strengster Wert). Warnung per Bestätigungsdialog, nicht blockierend. Vorbelegung einmalig, nur wenn der Server noch keine Liste hat: allgemeine Markennamen-Tabelle (Nurofen → Ibuprofen, ben-u-ron → Paracetamol, Dentinox → Lidocain …) gegen die eigenen alten `custom`-Einträge; nur Name + Wirkstoff. Keine Fieber-Schwellenlinie (keine verifizierte Referenz). Am PC geprüft (01.11.2026): Vorbelegung fand Nurofen Junior, ben-u-ron, Dentinox; Gabe, Warnung bei zu früher zweiter Gabe, Temperatur, Startbildschirm-Zeile (Seite passt weiter ohne Scrollen), Fieberkurve, Verwalten-Dialog.
+
+#### Goal 9 – App-Shortcuts
+- [ ] Langes Drücken aufs App-Symbol zeigt Schlaf, Flasche, Wickeln, Medikament
+- [ ] „Schlaf“ startet bzw. beendet direkt (mit Rückgängig), die anderen öffnen das passende Eingabefenster
+- [ ] Die Aktion läuft nur einmal (kein Wiederholen beim Neuladen)
+
+#### Goal 10 – Übergabe-Zusammenfassung
+- [ ] „Mehr → Übergabe“ zeigt für „seit 6/12/24 Std“ oder eine gewählte Zeit: Flaschen, Beikost, Wickel, Schlaf, Medikamente, Temperaturen, Sonstiges, aktuellen Stand, nächsten Schlaf
+- [ ] Zahlen stimmen mit dem Verlauf überein
+- [ ] „Teilen“ öffnet das Android-Teilen-Menü (sonst Kopieren)
+
+#### Goal 11 – Bericht für den Kinderarzt
+- [ ] Fragen für den Arzt erfassen („Mehr → Frage für den Arzt“) und abhaken
+- [ ] Bericht (Statistik → „Bericht für den Kinderarzt“): Kopf mit Alter, Wachstum mit Perzentilen, Schlaf und Ernährung (14 Tage), Medikamente/Temperaturen (28 Tage), offene Fragen
+- [ ] „Drucken / als PDF“ ergibt eine helle, lesbare Seite
+
+#### Goal 12 – Wachfenster-Ampel
+- [ ] Unter der Vorhersage ein Balken „wach X von ca. Y“; grün < 75 %, gelb 75–100 %, rot darüber
+- [ ] Aktualisiert sich im 30-Sek.-Takt; Startbildschirm bleibt ohne Scrollen
 
 ## Aktueller Stand
 - Goal 6: Code (`stats.js`, `growth.js`) ist geschrieben, am PC mit den echten Daten geprüft (7 Karten, Tages- und Wochenansicht, Perzentile: Gewicht 8,58 kg mit 11,9 Monaten = P37, Größe 76 cm mit 10,9 Monaten = P91; WHO-Median passt zu den „Altersdurchschnitt“-Werten von Happy Baby). Offen: Test auf dem Handy, Geburtsdatum eingeben.
