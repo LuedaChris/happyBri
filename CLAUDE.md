@@ -70,12 +70,13 @@ Kommunikation und App-Oberfläche: Deutsch.
 ## Goals
 
 ### Goal 1 – Erfassen auf einem Handy (lokal gespeichert)
-- [ ] App liegt auf dem Startbildschirm und öffnet ohne Browserleiste
-- [ ] Füttern und Wickeln in max. 2 Taps erfasst
-- [ ] Schlaf starten/stoppen, laufender Schlaf mit Dauer sichtbar
-- [ ] Einträge mit Uhrzeit nachtragen, bearbeiten, löschen
-- [ ] Einträge überleben einen App-Neustart; Erfassen klappt im Flugmodus
-- [ ] Datenmodell kann alle Arten aus der CSV speichern
+- [x] App liegt auf dem Startbildschirm und öffnet ohne Browserleiste
+- [x] Füttern und Wickeln in max. 2 Taps erfasst
+- [x] Schlaf starten/stoppen, laufender Schlaf mit Dauer sichtbar
+- [x] Einträge mit Uhrzeit nachtragen, bearbeiten, löschen
+- [x] Einträge überleben einen App-Neustart; Erfassen klappt im Flugmodus
+- [x] Datenmodell kann alle Arten aus der CSV speichern
+(Goal 1 abgeschlossen am 01.11.2026, auf dem Samsung vom Nutzer geprüft.)
 
 ### Goal 2 – Sync zwischen beiden Handys
 - [ ] Login für beide; jeder Eintrag zeigt, wer ihn gemacht hat
@@ -100,5 +101,5 @@ Kommunikation und App-Oberfläche: Deutsch.
 - [ ] Öffnet sich in Google Sheets mit korrekten Umlauten und Uhrzeiten
 
 ## Aktueller Stand
-- Goal 1: Code ist geschrieben und im Desktop-Browser getestet (Schnell-Erfassen, Schlaf, Verlauf, Bearbeiten-Dialog, Service Worker).
-  Noch offen: Veröffentlichung auf GitHub Pages (Git ist auf dem PC noch nicht installiert) und Test auf dem Handy – deshalb sind oben noch keine Kriterien abgehakt.
+- Goal 1: fertig und auf dem Handy abgenommen. Live unter https://luedachris.github.io/happyBri/ (GitHub Pages, Branch main).
+- Nächstes: Goal 2 (Sync mit Firebase). Vorher klären: Firebase-Projekt anlegen, Login-Methode (Google), die zwei erlaubten Konten.
