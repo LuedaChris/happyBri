@@ -111,7 +111,7 @@ function predictNextSleep(now = Date.now()) {
   const at = new Date(spDay(last.en) + 'T00:00');
   at.setMinutes(startMin); // läuft korrekt über Mitternacht und Zeitumstellung
   const bt = sleepBacktest(now);
-  return { state: 'ok', slot, at: at.getTime(), spread: bt.n ? Math.round(bt.medianErr) : null };
+  return { state: 'ok', slot, at: at.getTime(), spread: bt.n ? Math.round(bt.medianErr) : null, wakeSince: last.en };
 }
 
 // Anzeigename eines Slots

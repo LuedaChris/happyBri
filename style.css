@@ -131,6 +131,15 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .sw.l50 { background: #b9d9ff; } .sw.lpc { background: #6a74c9; } .sw.pt { background: #ff8fb8; border-radius: 50%; width: 9px; }
 #toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
 
+/* Wachfenster-Ampel (Zeile "Nächster Schlaf") */
+.ampel { display: block; height: 4px; border-radius: 2px; background: var(--line); margin-top: 4px; overflow: hidden; }
+.ampel i { display: block; height: 100%; border-radius: 2px; }
+.ampel.ok i { background: #5fcf94; }
+.ampel.warn i { background: #e0b04a; }
+.ampel.late i { background: #e0606a; }
+.srow .det small { font-size: 12px; }
+#status .srow { padding: 7px 0; }
+
 /* Medikamente & Fieber */
 .srow.tap { cursor: pointer; }
 .big.med { margin-bottom: 10px; min-height: 76px; padding: 8px 12px; }

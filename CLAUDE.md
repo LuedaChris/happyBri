@@ -186,6 +186,8 @@ Lehre: Beim Testen im Vorschau-Browser liefert der Service Worker nach einer Kor
 - [ ] Unter der Vorhersage ein Balken „wach X von ca. Y“; grün < 75 %, gelb 75–100 %, rot darüber
 - [ ] Aktualisiert sich im 30-Sek.-Takt; Startbildschirm bleibt ohne Scrollen
 
+Goal-12-Entscheidungen: `predictNextSleep` liefert zusätzlich `wakeSince` (Ende des letzten Schlafs); die Zeile „Nächster Schlaf“ zeigt einen 4-px-Balken (Anteil = wach seit / vorhergesagtes Wachfenster) und rechts „wach h:mm von h:mm“. Status-Zeilen etwas enger (7 px statt 8 px Abstand), damit 5 Zeilen + Ampel auf 375×812 ohne Scrollen passen (gemessen: Buttons enden bei 741 px, Tab-Leiste beginnt bei 751 px). Fehlt `wakeSince` (ältere `predict.js` im Cache), erscheint die Zeile ohne Balken. Am PC geprüft (01.11.2026): 10/17/30 Min wach bei vorhergesagten 20 Min → grün 50 %, gelb 85 %, rot.
+
 ## Aktueller Stand
 - Goal 6: Code (`stats.js`, `growth.js`) ist geschrieben, am PC mit den echten Daten geprüft (7 Karten, Tages- und Wochenansicht, Perzentile: Gewicht 8,58 kg mit 11,9 Monaten = P37, Größe 76 cm mit 10,9 Monaten = P91; WHO-Median passt zu den „Altersdurchschnitt“-Werten von Happy Baby). Offen: Test auf dem Handy, Geburtsdatum eingeben.
 - Goal-6-Entscheidungen: Bri ist ein Mädchen → WHO-Tabellen „girls“ (weight-for-age 0–5 J., length-for-age 0–2 J., als LMS-Werte 0–24 Monate in `growth.js`; Quelle who.int, am 01.11.2026 geladen). Durchschnitte ohne den laufenden Tag/die laufende Woche. „Altersdurchschnitt“ für Schlaf/Füttern wird bewusst nicht angezeigt (keine verlässliche deutsche Referenz). Schlaf über Mitternacht wird mit der Netto-Dauer anteilig auf die Tage verteilt. Wachfenster = Lücke zwischen Ende eines Schlafs und Beginn des nächsten (5 Min bis 12 Std).

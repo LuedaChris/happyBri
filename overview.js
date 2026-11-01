@@ -48,7 +48,15 @@ function predictionRow(row) {
   if (p.state === 'ok') {
     const range = p.spread != null ? `${clock(p.at - p.spread * 60000)}–${clock(p.at + p.spread * 60000)}` : '';
     const late = p.spread != null && Date.now() > p.at + p.spread * 60000;
-    return row('🔮', `Nächster Schlaf · ${slotName(p.slot)}`, `ca. ${clock(p.at)}`, late ? 'überfällig' : range);
+    // Wachfenster-Ampel: wie weit das vorhergesagte Wachfenster schon verbraucht ist (grün < 75 %, gelb bis 100 %, rot darüber)
+    if (!p.wakeSince) return row('🔮', `Nächster Schlaf · ${slotName(p.slot)}`, `ca. ${clock(p.at)}`, late ? 'überfällig' : range); // ältere predict.js im Cache
+    const total = (p.at - p.wakeSince) / 60000, awake = (Date.now() - p.wakeSince) / 60000;
+    const share = total > 0 ? awake / total : 1;
+    const level = share < 0.75 ? 'ok' : share <= 1 ? 'warn' : 'late';
+    const hm = min => { const m = Math.max(0, Math.round(min)); return `${Math.floor(m / 60)}:${pad(m % 60)}`; };
+    return `<div class="srow"><span class="ic">🔮</span><span class="sbody"><small>Nächster Schlaf · ${slotName(p.slot)}</small>
+      <b>ca. ${clock(p.at)}</b><span class="ampel ${level}"><i style="width:${Math.min(100, Math.round(share * 100))}%"></i></span></span>
+      <span class="det">${late ? 'überfällig' : range}<br><small>wach ${hm(awake)} von ${hm(total)}</small></span></div>`;
   }
   const hints = {
     few: ['noch zu wenig Daten', `${p.points} von mind. 4 Einträgen`],
