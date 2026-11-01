@@ -58,6 +58,15 @@ input, select, textarea { display: block; width: 100%; margin-top: 4px; padding:
 .custom button { width: 120px; min-height: 0; }
 .when { margin-top: 4px; }
 
+#gate { position: fixed; inset: 0; z-index: 20; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 16px; }
+#gate[hidden], .gatebox[hidden] { display: none; }
+.gatebox { width: 100%; max-width: 400px; text-align: center; color: var(--dim); }
+.gatebox h2 { color: var(--text); font-size: 28px; margin: 0 0 20px; }
+.gatebox label { text-align: left; }
+.gatebox .big { margin-top: 8px; }
+.who { text-align: center; color: var(--dim); font-size: 14px; margin-top: 24px; }
+.link.inline { display: inline; width: auto; padding: 4px; font-size: 14px; text-decoration: underline; }
+
 #toast { position: fixed; left: 16px; right: 16px; bottom: calc(20px + env(safe-area-inset-bottom)); max-width: 528px; margin: 0 auto;
   background: #2b3245; border-radius: 14px; padding: 8px 8px 8px 16px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
 #toast[hidden] { display: none; }

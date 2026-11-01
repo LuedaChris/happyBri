@@ -60,6 +60,9 @@ Kommunikation und App-Oberfläche: Deutsch.
 - Hosting: GitHub Pages (Annahme aus „GitHub- und Google-Konto vorhanden“; Nutzer kann widersprechen)
 - Datenspeicher/Sync ab Goal 2: Firebase (Firestore + Auth). Goal 1 lokal in IndexedDB (`db.js`).
 - Stack: reines HTML/CSS/JS ohne Build-Schritt (`index.html`, `style.css`, `app.js`, `db.js`, `sw.js`). Kein Node nötig.
+- Goal 2 Login: Firebase Auth mit E-Mail + Passwort, Konten legen die Eltern selbst in der Firebase-Konsole an (kein Registrierungsformular in der App). Namen für „eingetragen von“: Chris und Nadja (werden beim ersten Login in der App abgefragt und in Firestore gespeichert).
+- **Die E-Mail-Adressen der Eltern stehen nicht im Repo** (öffentlich!), nur in den Firestore-Regeln in der Firebase-Konsole.
+- Goal 2 Sync-Konzept: IndexedDB bleibt die Quelle für die Oberfläche (offline-fähig). Je Eintrag ein Firestore-Dokument mit gleicher `id`. Schreiben: lokal speichern, dann nach Firestore (Firestore-Offline-Warteschlange reicht Offline-Einträge nach). Lesen: Listener holt nur Dokumente mit `updatedAt` neuer als der letzte Sync (spart Lesezugriffe im Free Tier). Bei Konflikt auf demselben Eintrag gewinnt das höhere `updatedAt`; neue Einträge kollidieren nie, weil jede `id` eine UUID ist.
 - Baby heißt „Bri“ (Ersatz für `{babyName}`); die App heißt „happyBri“. GitHub-Repo: https://github.com/LuedaChris/happyBri (öffentlich, Pages-URL: https://luedachris.github.io/happyBri/). Beide Handys: Android (Samsung).
 - Füttern: Flasche 120/150/180 ml, Beikost 100/150/190/250 g, jeweils plus freie Mengeneingabe. Kein Stillen.
 - Wickeln: Pipi / Kacka / Beides. Kein „Trocken“-Button.

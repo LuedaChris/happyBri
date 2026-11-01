@@ -26,7 +26,25 @@
   <h2>Verlauf</h2>
   <div id="list"></div>
   <button id="moreBtn" class="link" hidden>Ältere Einträge laden</button>
+  <p class="who"><span id="who"></span> · <button class="link inline" id="logoutBtn">Abmelden</button></p>
 </main>
+
+<!-- Anmeldung: verdeckt die App, bis jemand eingeloggt ist -->
+<div id="gate">
+  <div id="gateLoading" class="gatebox">Lade …</div>
+  <form id="loginForm" class="gatebox" hidden>
+    <h2>happyBri</h2>
+    <label>E-Mail <input id="loginEmail" type="email" autocomplete="username" required></label>
+    <label>Passwort <input id="loginPass" type="password" autocomplete="current-password" required></label>
+    <button type="submit" class="big small ok">Anmelden</button>
+    <p id="loginMsg" class="danger" role="alert"></p>
+  </form>
+  <div id="nameBox" class="gatebox" hidden>
+    <h2>Wer bist du?</h2>
+    <p>Dein Name steht später bei jedem Eintrag.</p>
+    <div class="grid"><button class="big" data-name="Chris">Chris</button><button class="big" data-name="Nadja">Nadja</button></div>
+  </div>
+</div>
 
 <!-- Schnell-Eingabe (Flasche, Beikost, Wickeln, Mehr) -->
 <dialog id="quick">
@@ -76,5 +94,6 @@
 
 <script src="db.js"></script>
 <script src="app.js"></script>
+<script type="module" src="sync.js"></script>
 </body>
 </html>

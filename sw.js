@@ -1,10 +1,15 @@
 // Service Worker: legt die App-Dateien im Cache ab, damit die App auch im Flugmodus startet.
 // Bei Änderungen an App-Dateien die Versionsnummer erhöhen, sonst bleibt die alte Version im Cache.
-const CACHE = 'happybri-v1';
-const FILES = ['./', 'index.html', 'style.css', 'app.js', 'db.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
+const CACHE = 'happybri-v2';
+const FILES = ['./', 'index.html', 'style.css', 'app.js', 'db.js', 'sync.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
+// Firebase-Bibliothek (von Google geladen) ebenfalls ablegen, damit Login und Sync auch offline starten.
+const FIREBASE = ['app', 'auth', 'firestore'].map(n => `https://www.gstatic.com/firebasejs/11.10.0/firebase-${n}.js`);
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(async c => {
+    await c.addAll(FILES);
+    await Promise.all(FIREBASE.map(u => c.add(u).catch(() => {}))); // klappt es nicht, wird beim ersten Abruf nachgeholt
+  }).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
@@ -15,5 +20,11 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(caches.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request)));
+  const url = new URL(e.request.url);
+  const mine = url.origin === location.origin || url.hostname === 'www.gstatic.com';
+  if (!mine) return; // Firestore/Auth-Verbindungen nie anfassen
+  e.respondWith(caches.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request).then(res => {
+    if (url.hostname === 'www.gstatic.com' && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); }
+    return res;
+  })));
 });

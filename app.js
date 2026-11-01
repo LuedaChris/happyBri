@@ -34,7 +34,7 @@ function newEntry(type, title, start, extra = {}) {
   return {
     id: crypto.randomUUID(), type, title, start, end: null, durationMin: null,
     amount: null, unit: null, rating: null, pauses: null, pauseMin: null,
-    note: null, detailsRaw: null, source: 'app', createdBy: null,
+    note: null, detailsRaw: null, source: 'app', createdBy: window.currentUserName || null,
     createdAt: now, updatedAt: now, deleted: false, ...extra,
   };
 }
@@ -62,6 +62,7 @@ function describe(e) {
   if (e.type === 'sleep') {
     sub = e.end ? fmtDur(e.durationMin ?? minutesBetween(e.start, e.end)) + ` (bis ${fmtTime(e.end)})` : 'läuft …';
   } else if (e.note) sub = e.note;
+  if (e.createdBy) sub = sub ? `${sub} · ${e.createdBy}` : e.createdBy;
   return { main, sub };
 }
 
@@ -246,6 +247,9 @@ $('#list').onclick = ev => {
 $('#moreBtn').onclick = () => { shown += 40; render(); };
 
 // ---------- Start ----------
+window.reloadEntries = reload; // sync.js ruft das auf, wenn Einträge vom anderen Handy angekommen sind
+$('#gate').hidden = false;
+setTimeout(() => { if (!window.Sync) $('#gateLoading').textContent = 'Anmeldung nicht erreichbar. Bitte einmal mit Internet öffnen.'; }, 8000);
 reload();
 setInterval(render, 30000); // laufende Schlafdauer aktualisieren
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');

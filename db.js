@@ -20,10 +20,20 @@ const DB = (() => {
     });
   }
 
-  return {
-    // Gelöschte Einträge bleiben als Markierung (deleted) erhalten, damit sich Löschungen später synchronisieren lassen.
-    all: async () => (await run('readonly', s => s.getAll())).filter(e => !e.deleted),
+  const db = {
+    // Gelöschte Einträge bleiben als Markierung (deleted) erhalten, damit sich Löschungen synchronisieren lassen.
+    all: async () => (await db.allRaw()).filter(e => !e.deleted),
+    allRaw: () => run('readonly', s => s.getAll()),
     get: id => run('readonly', s => s.get(id)),
-    put: entry => run('readwrite', s => s.put({ ...entry, updatedAt: Date.now() })),
+    // Lokale Änderung: Zeitstempel setzen, speichern, dann an den Sync melden (sync.js setzt onLocalChange).
+    put: async entry => {
+      const stamped = { ...entry, updatedAt: Date.now() };
+      await run('readwrite', s => s.put(stamped));
+      if (db.onLocalChange) db.onLocalChange(stamped);
+    },
+    // Änderung aus der Cloud: unverändert speichern (Zeitstempel bleibt, nichts wird zurückgeschickt).
+    putRaw: entry => run('readwrite', s => s.put(entry)),
+    onLocalChange: null,
   };
+  return db;
 })();
