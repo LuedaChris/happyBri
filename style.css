@@ -147,6 +147,38 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .handover p:first-child { color: var(--dim); font-size: 13px; }
 #toastUndo[hidden] { display: none; }
 
+/* Bericht für den Kinderarzt (Bildschirm) */
+#reportView { position: fixed; inset: 0; z-index: 8; /* über Tab-Leiste, unter Hinweis (Toast) */ overflow-y: auto; background: var(--bg); color: var(--text);
+  padding: calc(12px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); }
+#reportView[hidden] { display: none; }
+#reportBody { max-width: 760px; margin: 0 auto; }
+.rbar { display: flex; gap: 10px; max-width: 760px; margin: 0 auto 12px; }
+#reportBody h1 { font-size: 22px; color: var(--text); margin: 8px 0 4px; }
+.rmeta, .rnote { color: var(--dim); font-size: 14px; }
+.rsec { background: var(--card); border-radius: 14px; padding: 12px; margin: 12px 0; break-inside: avoid; }
+.rsec h2 { color: var(--text); margin: 0 0 8px; font-size: 17px; }
+.rsec h3 { font-size: 15px; margin: 10px 0 4px; }
+.rtable { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 6px; }
+.rtable th, .rtable td { text-align: left; padding: 5px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.rtable th { color: var(--dim); font-weight: 500; }
+.rquestions { list-style: none; padding: 0; margin: 0; }
+.rquestions li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.rquestions label { display: flex; gap: 8px; color: var(--text); font-size: 15px; margin: 0; }
+.rquestions input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; }
+.rdate { color: var(--dim); font-size: 13px; white-space: nowrap; }
+
+/* Druck / PDF: nur der Bericht, hell */
+@media print {
+  :root { --bg: #fff; --card: #fff; --text: #000; --dim: #444; --line: #ccc; }
+  body { background: #fff; }
+  body > *:not(#reportView) { display: none !important; }
+  #reportView { position: static; display: block !important; overflow: visible; padding: 0; }
+  .noprint { display: none !important; }
+  .rsec { border: 1px solid #ccc; }
+  .chart .pc50 { stroke: #1f5fbf; }
+  .chart .pc { stroke: #8a92d6; }
+}
+
 #infoBody table { width: 100%; margin-bottom: 12px; border-collapse: collapse; }
 #infoBody td { padding: 4px 0; border-bottom: 1px solid var(--line); }
 #infoBody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }

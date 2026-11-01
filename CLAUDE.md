@@ -179,6 +179,9 @@ Goal-10-Entscheidungen: Code in `handover.js`, erreichbar über „Mehr → Übe
 - [ ] Bericht (Statistik → „Bericht für den Kinderarzt“): Kopf mit Alter, Wachstum mit Perzentilen, Schlaf und Ernährung (14 Tage), Medikamente/Temperaturen (28 Tage), offene Fragen
 - [ ] „Drucken / als PDF“ ergibt eine helle, lesbare Seite
 
+Goal-11-Entscheidungen: Code in `report.js`. Neuer Typ `question` (❓, Titel = Frage), erfasst über „Mehr → Frage für den Arzt“, erscheint nicht im Verlauf, abhaken = löschen (mit Rückgängig). Bericht als Vollbild-Ansicht `#reportView`, geöffnet über Statistik → „Bericht öffnen“; „Drucken / als PDF“ = `window.print()`. Druckfarben über `@media print` in `style.css` (CSS-Variablen auf hell umgestellt, alles außer dem Bericht ausgeblendet). Inhalte: Alter in Kalendermonaten/-tagen, Wachstum (`growthChart` + letzte 6 Messungen mit WHO-Perzentil), Schlaf/Ernährung/Wickeln als Ø der 14 vollständigen Tage vor heute (nur Tage mit Einträgen; Schlaf über `aggregate`), Medikamente/Temperaturen 28 Tage, offene Fragen. Am PC geprüft (01.11.2026): alle Abschnitte mit echten Daten (z. B. Gesamtschlaf Ø 13 Std 29 Min, Flasche Ø 371 ml in 2,9 Mahlzeiten), Frage erfassen/abhaken, Druckansicht per eingefügter Druck-Regeln simuliert (weiß, schwarz, nur Bericht). **Nicht geprüft:** echter Druckdialog auf dem Handy.
+Lehre: Beim Testen im Vorschau-Browser liefert der Service Worker nach einer Korrektur die alte Datei aus – vor jedem Test Service Worker abmelden und Cache leeren.
+
 #### Goal 12 – Wachfenster-Ampel
 - [ ] Unter der Vorhersage ein Balken „wach X von ca. Y“; grün < 75 %, gelb 75–100 %, rot darüber
 - [ ] Aktualisiert sich im 30-Sek.-Takt; Startbildschirm bleibt ohne Scrollen

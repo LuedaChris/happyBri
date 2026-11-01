@@ -231,6 +231,9 @@ function renderStats() {
   `Ø Wachfenster ${fmtDur(Math.round(periodAvg(rows, r => avg(r.wake))))} · Ø Nickerchen ${fmtDur(Math.round(periodAvg(rows, r => avg(r.naps))))}${avgNote()}
    <br>Dafür gibt es keine medizinischen Richtwerte. Als Orientierung (Apotheken Umschau): ab etwa 4 Monaten meist zwei Nickerchen am Tag, später nur noch eines am Nachmittag.`);
 
+  html += card('Bericht für den Kinderarzt', `<p>Wachstum mit Perzentilen, Schlaf und Ernährung der letzten 14 Tage, Medikamente und Temperaturen, eure offenen Fragen – zum Zeigen oder als PDF.</p>
+    <button class="big small" data-report>Bericht öffnen</button>`);
+
   html += card('Schlafvorhersage prüfen', `<p>Backtest: Für jeden Schlaf der 28 Tage bis zu einem Stichtag sagt die App die Startzeit nur mit den Daten davor vorher und vergleicht sie mit der echten.</p>
     <button class="big small" data-backtest>Backtest öffnen</button>`);
 
@@ -265,6 +268,7 @@ $('#statsBody').onclick = ev => {
   }
   if (t.dataset.editbirth !== undefined) saveProfile({ ...getProfile(), birth: '' });
   if (t.dataset.backtest !== undefined) openBacktest();
+  if (t.dataset.report !== undefined) openReport();
 };
 
 // Backtest der Schlafvorhersage (predict.js) im Dialog; Stichtag wählbar, Standard: jetzt

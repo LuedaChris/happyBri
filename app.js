@@ -12,6 +12,7 @@ const TYPES = {
   height:  { icon: '📏', unit: 'cm', titles: ['Größe'] },
   medication:  { icon: '💊', unit: '',   titles: [] },            // Titel = Medikament, substance = Wirkstoff (meds.js)
   temperature: { icon: '🌡️', unit: '°C', titles: ['Temperatur'] },
+  question:    { icon: '❓', unit: '',   titles: [] },            // Frage für den Arzt (report.js), nicht im Verlauf
 };
 
 // ---------- Zeit-Helfer (Ortszeit als "YYYY-MM-DDTHH:mm", wie in der CSV) ----------
@@ -80,11 +81,11 @@ function render(fromTimer = false) {
     ? `😴 Aufgewacht<small>schläft seit ${fmtTime(run.start)} · ${fmtDur(Math.max(0, minutesBetween(run.start, nowLocal())))}</small>`
     : '😴 Schlaf starten';
 
-  // Verlauf, nach Tagen gruppiert
-  const list = $('#list');
-  if (!entries.length) { list.innerHTML = '<div class="empty">Noch keine Einträge.</div>'; $('#moreBtn').hidden = true; return; }
+  // Verlauf, nach Tagen gruppiert (Fragen für den Arzt stehen im Bericht, nicht hier)
+  const list = $('#list'), visible = entries.filter(e => e.type !== 'question');
+  if (!visible.length) { list.innerHTML = '<div class="empty">Noch keine Einträge.</div>'; $('#moreBtn').hidden = true; return; }
   let html = '', lastDay = '';
-  for (const e of entries.slice(0, shown)) {
+  for (const e of visible.slice(0, shown)) {
     const day = e.start.slice(0, 10);
     if (day !== lastDay) { html += `<div class="day">${fmtDay(e.start)}</div>`; lastDay = day; }
     const { main, sub } = describe(e);
@@ -92,7 +93,7 @@ function render(fromTimer = false) {
       <span class="main">${esc(main)}<div class="sub">${esc(sub)}</div></span><span class="time">${fmtTime(e.start)}</span></button>`;
   }
   list.innerHTML = html;
-  $('#moreBtn').hidden = entries.length <= shown;
+  $('#moreBtn').hidden = visible.length <= shown;
 }
 
 // ---------- Toast mit "Rückgängig" ----------
@@ -161,7 +162,8 @@ function moreSheet() {
       <button class="big" data-new="custom">📝 Sonstiges</button><button class="big" data-new="memory">⭐ Meilenstein</button>
       <button class="big" data-new="sleep">😴 Schlaf nachtragen</button><button class="big" data-new="feeding">🍼 Füttern nachtragen</button>
       <button class="big" data-act="med">💊 Medikament</button><button class="big" data-act="temp">🌡️ Temperatur</button>
-      <button class="big" data-act="handover">📋 Übergabe</button></div>`;
+      <button class="big" data-act="handover">📋 Übergabe</button><button class="big" data-act="question">❓ Frage für den Arzt</button></div>`;
+    body.querySelector('[data-act=question]').onclick = () => questionSheet();
     body.querySelector('[data-act=handover]').onclick = () => { $('#quick').close(); openHandover(); };
     // Medikament und Temperatur haben eigene Eingabefenster (meds.js); das Zeitfeld zum Nachtragen bleibt dabei erhalten
     body.querySelector('[data-act=med]').onclick = () => { const t = $('#quickTime').value, touched = timeTouched; medSheet(); keepTime(t, touched); };

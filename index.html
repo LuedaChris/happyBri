@@ -46,6 +46,15 @@
 </div>
 </main>
 
+<!-- Bericht für den Kinderarzt (report.js): Vollbild, beim Drucken das Einzige, was auf dem Papier landet -->
+<section id="reportView" hidden>
+  <div class="rbar noprint">
+    <button class="big small ok" id="reportPrint">Drucken / als PDF</button>
+    <button class="big small" id="reportClose">Schließen</button>
+  </div>
+  <div id="reportBody"></div>
+</section>
+
 <nav id="tabs">
   <button data-view="home" class="on">🏠<span>Start</span></button>
   <button data-view="stats">📊<span>Statistik</span></button>
@@ -93,6 +102,7 @@
         <option value="height">Größe</option>
         <option value="medication">Medikament</option>
         <option value="temperature">Temperatur</option>
+        <option value="question">Frage für den Arzt</option>
       </select>
     </label>
     <label>Titel <input id="fTitle" list="titles"><datalist id="titles"></datalist></label>
@@ -151,6 +161,7 @@
 <script src="export.js"></script>
 <script src="growth.js"></script>
 <script src="stats.js"></script>
+<script src="report.js"></script>
 <script type="module" src="sync.js"></script>
 </body>
 </html>
