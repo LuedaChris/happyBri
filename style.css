@@ -225,3 +225,12 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 
 /* Tagesspruch */
 #quote { background: var(--card); border-radius: 14px; padding: 16px 18px; text-align: center; font-size: 17px; line-height: 1.4; color: var(--text); font-style: italic; }
+
+/* Verlauf filtern */
+#histBar .seg { margin-bottom: 10px; }
+.hchips { flex-wrap: nowrap; overflow-x: auto; max-height: none; padding-bottom: 4px; }
+.hchips .chip { flex: none; }
+.hday { display: flex; gap: 8px; margin-bottom: 8px; }
+.hday input { flex: 1; margin: 0; text-align: center; }
+.hday button { width: 52px; border-radius: 12px; background: var(--more); font-size: 24px; }
+.hday button:disabled { opacity: .25; }

@@ -219,6 +219,12 @@ Entscheidungen: Code in `layout.js`. Ordnen per ↑ ↓ statt Ziehen (nachts ein
 - [ ] Ein Spruch wiederholt sich frühestens nach einem Monat
 Entscheidungen: Code in `quotes.js`. 35 Sprüche, **vom Nutzer vorab abgesegnet** (Änderungen an der Liste nur nach Rücksprache; nie weniger als 31). Spruch = Liste der Reihe nach nach Datum (Tageswechsel 04:00), nichts wird gespeichert; Wiederholung also nach 35 Tagen. Am PC geprüft (02.11.2026): 35 Tage hintereinander alle verschieden, Tag 36 = Tag 1, Wechsel genau 04:00, Verschieben, Ausblenden, Zurücksetzen. **Nicht geprüft:** Handy. Hinweis: Wer schon eine eigene Startseiten-Anordnung gespeichert hat, bekommt das Kästchen ganz unten (neue Elemente kommen ans Ende) und kann es verschieben.
 
+### Goal 17 – Verlauf filtern (vom Nutzer am 02.11.2026 gewünscht, wie in Happy Baby)
+- [ ] Im Verlauf nach Art filtern (Chips: Alle, Schlaf, Füttern, Wickeln, Medizin, Wachstum, Sonstiges)
+- [ ] Nach Datum filtern: Umschalter „Alle / Tag“, im Tag-Modus ‹ › und Datumsfeld
+- [ ] Art und Tag lassen sich kombinieren; ohne Auswahl sieht der Verlauf aus wie vorher
+Entscheidungen: Code in `app.js` (`hist`, `histMatch`, `drawHistBar`). Gruppen: Medizin = Medikament + Temperatur, Wachstum = Gewicht + Größe, Sonstiges = Sonstiges + Meilenstein. Ein Eintrag zählt zu dem Tag, an dem er beginnt (Nachtschlaf über Mitternacht steht am Starttag). Im Tag-Modus werden alle Einträge des Tages gezeigt (kein „Ältere laden“). Der Filter wird nicht gespeichert und ist nach dem Neustart zurückgesetzt. Am PC geprüft (02.11.2026): Art, Tag, ‹ ›, Datumsfeld, Kombination, leere Auswahl, Rückkehr zu „Alle“. **Nicht geprüft:** Handy.
+
 ## Aktueller Stand
 - **Stand 01.11.2026 nachts:** Goals 8–12 gebaut, am PC geprüft und hochgeladen (Service-Worker-Cache `happybri-v14`). Handy-Abnahme für Goals 6–12 steht aus. Offene Handy-Tests aus Goal 7: Vorhersage tagsüber anzeigen, Nachtragen aktualisiert die Vorhersage.
 - Goal 6: Code (`stats.js`, `growth.js`) ist geschrieben, am PC mit den echten Daten geprüft (7 Karten, Tages- und Wochenansicht, Perzentile: Gewicht 8,58 kg mit 11,9 Monaten = P37, Größe 76 cm mit 10,9 Monaten = P91; WHO-Median passt zu den „Altersdurchschnitt“-Werten von Happy Baby). Offen: Test auf dem Handy, Geburtsdatum eingeben.

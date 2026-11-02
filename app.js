@@ -74,6 +74,38 @@ function describe(e) {
   return { main, sub };
 }
 
+// ---------- Verlauf filtern: nach Art (Chips) und nach Tag (Alle / Tag mit ‹ ›) ----------
+const HIST_TYPES = [
+  ['all', '🗂️', 'Alle', null], ['sleep', '😴', 'Schlaf', ['sleep']], ['feeding', '🍼', 'Füttern', ['feeding']],
+  ['diaper', '🧷', 'Wickeln', ['diaper']], ['med', '💊', 'Medizin', ['medication', 'temperature']],
+  ['growth', '⚖️', 'Wachstum', ['weight', 'height']], ['other', '📝', 'Sonstiges', ['custom', 'memory']],
+];
+const hist = { type: 'all', day: null }; // day: "YYYY-MM-DD" oder null = alle Tage
+const histMatch = e => {
+  const t = HIST_TYPES.find(x => x[0] === hist.type)[3];
+  return (!t || t.includes(e.type)) && (!hist.day || e.start.slice(0, 10) === hist.day);
+};
+const shiftDay = (day, n) => { const d = new Date(day + 'T12:00'); d.setDate(d.getDate() + n); return toLocal(d).slice(0, 10); };
+function drawHistBar() {
+  const today = nowLocal().slice(0, 10);
+  $('#histBar').innerHTML = `<div class="seg"><button data-hmode="all" class="${hist.day ? '' : 'on'}">Alle</button><button data-hmode="day" class="${hist.day ? 'on' : ''}">Tag</button></div>
+    <div class="chips hchips">${HIST_TYPES.map(([id, ic, label]) => `<button class="chip${hist.type === id ? ' on' : ''}" data-htype="${id}">${ic} ${label}</button>`).join('')}</div>`
+    + (hist.day ? `<div class="hday"><button data-hstep="-1" aria-label="Vortag">‹</button>
+      <input type="date" id="histDay" value="${hist.day}" max="${today}"><button data-hstep="1" aria-label="Folgetag"${hist.day >= today ? ' disabled' : ''}>›</button></div>` : '');
+}
+$('#histBar').onclick = ev => {
+  const b = ev.target.closest('button');
+  if (!b) return;
+  if (b.dataset.hmode) hist.day = b.dataset.hmode === 'day' ? (hist.day || nowLocal().slice(0, 10)) : null;
+  if (b.dataset.htype) hist.type = b.dataset.htype;
+  if (b.dataset.hstep) hist.day = shiftDay(hist.day, Number(b.dataset.hstep));
+  shown = 40; drawHistBar(); render(true);
+};
+$('#histBar').onchange = ev => {
+  if (ev.target.id !== 'histDay' || !ev.target.value) return;
+  hist.day = ev.target.value; shown = 40; drawHistBar(); render(true);
+};
+
 function render(fromTimer = false) {
   renderOverview();
   // Statistik nur bei echten Änderungen neu zeichnen, nicht im 30-Sek.-Takt (sonst springen Eingabefelder zurück)
@@ -86,10 +118,10 @@ function render(fromTimer = false) {
     : '😴 Schlaf starten';
 
   // Verlauf, nach Tagen gruppiert (Fragen für den Arzt stehen im Bericht, nicht hier)
-  const list = $('#list'), visible = entries.filter(e => e.type !== 'question');
-  if (!visible.length) { list.innerHTML = '<div class="empty">Noch keine Einträge.</div>'; $('#moreBtn').hidden = true; return; }
+  const list = $('#list'), visible = entries.filter(e => e.type !== 'question' && histMatch(e));
+  if (!visible.length) { list.innerHTML = `<div class="empty">${hist.type === 'all' && !hist.day ? 'Noch keine Einträge.' : 'Keine Einträge für diese Auswahl.'}</div>`; $('#moreBtn').hidden = true; return; }
   let html = '', lastDay = '';
-  for (const e of visible.slice(0, shown)) {
+  for (const e of visible.slice(0, hist.day ? Infinity : shown)) { // ein einzelner Tag wird immer ganz gezeigt
     const day = e.start.slice(0, 10);
     if (day !== lastDay) { html += `<div class="day">${fmtDay(e.start)}</div>`; lastDay = day; }
     const { main, sub } = describe(e);
@@ -324,6 +356,7 @@ $('#moreBtn').onclick = () => { shown += 40; render(); };
 window.reloadEntries = reload; // sync.js ruft das auf, wenn Einträge vom anderen Handy angekommen sind
 $('#gate').hidden = false;
 setTimeout(() => { if (!window.Sync) $('#gateLoading').textContent = 'Anmeldung nicht erreichbar. Bitte einmal mit Internet öffnen.'; }, 8000);
+drawHistBar();
 window.entriesReady = reload(); // erstes Laden; andere Teile (z. B. meds.js) warten darauf
 setInterval(() => render(true), 30000); // laufende Schlafdauer und Vorhersage aktualisieren
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
