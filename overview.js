@@ -32,12 +32,15 @@ function renderStatus() {
   }
   const detail = e => [e.title, e.amount != null ? `${e.amount} ${e.unit || ''}`.trim() : ''].filter(Boolean).join(' ');
 
-  $('#status').innerHTML =
-    row('🍼', 'Letzte Fütterung', feed ? fmtAgo(minutesAgo(feed.start)) : '–', feed ? detail(feed) : '') +
-    row('🧷', 'Letzter Wickel', diaper ? fmtAgo(minutesAgo(diaper.start)) : '–', diaper ? detail(diaper) : '') +
-    row('😴', 'Schlaf', sleepValue, sleepDetail) +
-    predictionRow(row) +
-    (typeof medsRow === 'function' ? medsRow() : ''); // nur sichtbar, wenn in den letzten 24 Std Medikamente/Fieber erfasst wurden
+  const html = arrange('status', { // Reihenfolge/Sichtbarkeit je Person (layout.js)
+    feed: row('🍼', 'Letzte Fütterung', feed ? fmtAgo(minutesAgo(feed.start)) : '–', feed ? detail(feed) : ''),
+    diaper: row('🧷', 'Letzter Wickel', diaper ? fmtAgo(minutesAgo(diaper.start)) : '–', diaper ? detail(diaper) : ''),
+    sleep: row('😴', 'Schlaf', sleepValue, sleepDetail),
+    predict: predictionRow(row),
+    meds: typeof medsRow === 'function' ? medsRow() : '', // nur sichtbar, wenn in den letzten 24 Std Medikamente/Fieber erfasst wurden
+  });
+  $('#status').innerHTML = html;
+  $('#status').hidden = !html; // alle Zeilen ausgeblendet: keine leere Karte
 }
 
 // Vorhersage des nächsten Schlafs (predict.js); Spanne = ± Median-Fehler aus dem Backtest der letzten 28 Tage

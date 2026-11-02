@@ -180,17 +180,20 @@ function diaperSheet() {
 
 function moreSheet() {
   openQuick('Mehr', body => {
-    body.innerHTML = `<div class="grid">
-      <button class="big" data-new="weight">⚖️ Gewicht</button><button class="big" data-new="height">📏 Größe</button>
-      <button class="big" data-new="custom">📝 Sonstiges</button><button class="big" data-new="memory">⭐ Meilenstein</button>
-      <button class="big" data-new="sleep">😴 Schlaf nachtragen</button><button class="big" data-new="feeding">🍼 Füttern nachtragen</button>
-      <button class="big" data-act="med">💊 Medikament</button><button class="big" data-act="temp">🌡️ Temperatur</button>
-      <button class="big" data-act="handover">📋 Übergabe</button><button class="big" data-act="question">❓ Frage für den Arzt</button></div>`;
-    body.querySelector('[data-act=question]').onclick = () => questionSheet();
-    body.querySelector('[data-act=handover]').onclick = () => { $('#quick').close(); openHandover(); };
+    // Reihenfolge und Auswahl der Knöpfe je Person (layout.js)
+    body.innerHTML = `<div class="grid">${arrange('more', {
+      weight: '<button class="big" data-new="weight">⚖️ Gewicht</button>', height: '<button class="big" data-new="height">📏 Größe</button>',
+      custom: '<button class="big" data-new="custom">📝 Sonstiges</button>', memory: '<button class="big" data-new="memory">⭐ Meilenstein</button>',
+      sleep: '<button class="big" data-new="sleep">😴 Schlaf nachtragen</button>', feeding: '<button class="big" data-new="feeding">🍼 Füttern nachtragen</button>',
+      med: '<button class="big" data-act="med">💊 Medikament</button>', temp: '<button class="big" data-act="temp">🌡️ Temperatur</button>',
+      handover: '<button class="big" data-act="handover">📋 Übergabe</button>', question: '<button class="big" data-act="question">❓ Frage für den Arzt</button>',
+    })}</div><button class="link" data-layout="more">Menü anordnen</button>`;
+    const act = (name, fn) => { const b = body.querySelector(`[data-act=${name}]`); if (b) b.onclick = fn; };
+    act('question', () => questionSheet());
+    act('handover', () => { $('#quick').close(); openHandover(); });
     // Medikament und Temperatur haben eigene Eingabefenster (meds.js); das Zeitfeld zum Nachtragen bleibt dabei erhalten
-    body.querySelector('[data-act=med]').onclick = () => { const t = $('#quickTime').value, touched = timeTouched; medSheet(); keepTime(t, touched); };
-    body.querySelector('[data-act=temp]').onclick = () => { const t = $('#quickTime').value, touched = timeTouched; tempSheet(); keepTime(t, touched); };
+    act('med', () => { const t = $('#quickTime').value, touched = timeTouched; medSheet(); keepTime(t, touched); });
+    act('temp', () => { const t = $('#quickTime').value, touched = timeTouched; tempSheet(); keepTime(t, touched); });
     body.querySelectorAll('[data-new]').forEach(b => (b.onclick = () => {
       const start = quickStart();
       $('#quick').close();

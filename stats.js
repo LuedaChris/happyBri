@@ -207,9 +207,10 @@ function renderStats() {
   const sleepTot = rows.map(r => (r.nap + r.night) / r.per);
   let html = `<div class="seg"><button data-mode="day" class="${statsMode === 'day' ? 'on' : ''}">Täglich</button><button data-mode="week" class="${statsMode === 'week' ? 'on' : ''}">Wöchentlich</button></div>`;
 
-  html += feverCard(); // nur, wenn in den letzten 14 Tagen Temperaturen oder Medikamente erfasst wurden (meds.js)
+  const parts = {}; // Karten je id; Reihenfolge und Sichtbarkeit je Person (layout.js)
+  parts.fever = feverCard(); // nur, wenn in den letzten 14 Tagen Temperaturen oder Medikamente erfasst wurden (meds.js)
 
-  if (statsMode === 'day') html += card('Schlafplan', sleepPlanChart(periods) + legend([['nap', 'Schlaf'], ['wake', 'Wach']]));
+  if (statsMode === 'day') parts.sleepplan = card('Schlafplan', sleepPlanChart(periods) + legend([['nap', 'Schlaf'], ['wake', 'Wach']]));
 
   const ageM = babyAgeMonths(), ref = ageM != null ? sleepRef(ageM) : null;
   const sleepAvg = Math.round(periodAvg(rows, r => (r.nap + r.night) / r.per));
@@ -218,42 +219,43 @@ function renderStats() {
     const [lo, hi] = ref.band, verdict = !sleepAvg ? '' : sleepAvg < lo ? ' – darunter' : sleepAvg > hi ? ' – darüber' : ' – im Bereich';
     refText = `<br>Richtwert mit ${Math.floor(ageM)} Monaten: ${lo / 60}–${hi / 60} Std pro Tag inkl. Nickerchen (${ref.src})${verdict}. Der Bedarf ist individuell verschieden.`;
   }
-  html += card(`Gesamtschlaf (${per})`, barChart({
+  parts.sleeptotal = card(`Gesamtschlaf (${per})`, barChart({
     labels, stacked: true, steps: TIME_STEPS, fmtAxis: fmtAxisTime, fmtLabel: fmtDur, band: ref ? ref.band : null,
     series: [{ cls: 'night', values: rows.map(r => r.night / r.per) }, { cls: 'nap', values: rows.map(r => r.nap / r.per) }],
   }) + legend([['nap', 'Nickerchen'], ['night', 'Nachtschlaf'], ...(ref ? [['band', 'Richtwert']] : [])]),
   `Ø ${fmtDur(sleepAvg)} · davon Nickerchen Ø ${fmtDur(Math.round(periodAvg(rows, r => r.nap / r.per)))}${avgNote()}${refText}`);
 
-  html += card('Wachfenster und Nickerchen', barChart({
+  parts.wake = card('Wachfenster und Nickerchen', barChart({
     labels, steps: TIME_STEPS, fmtAxis: fmtAxisTime, fmtLabel: fmtDur,
     series: [{ cls: 'wakebar', values: rows.map(r => avg(r.wake)) }, { cls: 'nap', values: rows.map(r => avg(r.naps)) }],
   }) + legend([['wakebar', 'Ø Wachfenster'], ['nap', 'Ø Nickerchen']]),
   `Ø Wachfenster ${fmtDur(Math.round(periodAvg(rows, r => avg(r.wake))))} · Ø Nickerchen ${fmtDur(Math.round(periodAvg(rows, r => avg(r.naps))))}${avgNote()}
    <br>Dafür gibt es keine medizinischen Richtwerte. Als Orientierung (Apotheken Umschau): ab etwa 4 Monaten meist zwei Nickerchen am Tag, später nur noch eines am Nachmittag.`);
 
-  html += card('Bericht für den Kinderarzt', `<p>Wachstum mit Perzentilen, Schlaf und Ernährung der letzten 14 Tage, Medikamente und Temperaturen, eure offenen Fragen – zum Zeigen oder als PDF.</p>
+  parts.report = card('Bericht für den Kinderarzt', `<p>Wachstum mit Perzentilen, Schlaf und Ernährung der letzten 14 Tage, Medikamente und Temperaturen, eure offenen Fragen – zum Zeigen oder als PDF.</p>
     <button class="big small" data-report>Bericht öffnen</button>`);
 
-  html += card('Schlafvorhersage prüfen', `<p>Backtest: Für jeden Schlaf der 28 Tage bis zu einem Stichtag sagt die App die Startzeit nur mit den Daten davor vorher und vergleicht sie mit der echten.</p>
+  parts.backtest = card('Schlafvorhersage prüfen', `<p>Backtest: Für jeden Schlaf der 28 Tage bis zu einem Stichtag sagt die App die Startzeit nur mit den Daten davor vorher und vergleicht sie mit der echten.</p>
     <button class="big small" data-backtest>Backtest öffnen</button>`);
 
   const feedChart = (key, title, unit, cls) => card(`${title} (${unit}, ${per})`, barChart({
     labels, steps: COUNT_STEPS, fmtAxis: v => v, fmtLabel: v => Math.round(v),
     series: [{ cls, values: rows.map(r => perMin(r, key)) }],
   }), `Ø ${Math.round(periodAvg(rows, r => perMin(r, key)))} ${unit}${avgNote()}`);
-  html += feedChart('bottle', 'Flasche', 'ml', 'bottle');
-  html += feedChart('solid', 'Beikost', 'g', 'solid');
-  html += popoCard(); // Roter Popo & Ernährung (popo.js)
+  parts.bottle = feedChart('bottle', 'Flasche', 'ml', 'bottle');
+  parts.solid = feedChart('solid', 'Beikost', 'g', 'solid');
+  parts.popo = popoCard(); // Roter Popo & Ernährung (popo.js)
 
   if (profile.birth) {
-    html += growthCard('weight', 'weight', 'Gewicht (kg)', 'kg', 1, profile);
-    html += growthCard('length', 'height', 'Größe (cm)', 'cm', 5, profile);
-    html += `<p class="who">Referenz: WHO Child Growth Standards (Mädchen), Perzentile 3/15/50/85/97 – wie in den deutschen Vorsorgeheften. Zur Orientierung, keine ärztliche Beurteilung.</p>
+    parts.growth = growthCard('weight', 'weight', 'Gewicht (kg)', 'kg', 1, profile)
+      + growthCard('length', 'height', 'Größe (cm)', 'cm', 5, profile)
+      + `<p class="who">Referenz: WHO Child Growth Standards (Mädchen), Perzentile 3/15/50/85/97 – wie in den deutschen Vorsorgeheften. Zur Orientierung, keine ärztliche Beurteilung.</p>
       <p class="who"><button class="link inline" data-editbirth>Geburtsdatum ändern</button></p>`;
   } else {
-    html += card('Gewicht und Größe', `<p>Für die Wachstumskurven braucht die App das Geburtsdatum. Es wird nur in eurer Datenbank gespeichert.</p>
+    parts.growth = card('Gewicht und Größe', `<p>Für die Wachstumskurven braucht die App das Geburtsdatum. Es wird nur in eurer Datenbank gespeichert.</p>
       <label>Geburtsdatum <input type="date" id="birthInput"></label><button class="big small ok" data-savebirth>Speichern</button>`);
   }
+  html += arrange('stats', parts) + '<p class="who"><button class="link inline" data-layout="stats">Statistik anordnen</button></p>';
   $('#statsBody').innerHTML = html;
 }
 

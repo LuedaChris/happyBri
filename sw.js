@@ -1,7 +1,7 @@
 // Service Worker: legt die App-Dateien im Cache ab, damit die App auch im Flugmodus startet.
 // Bei Änderungen an App-Dateien die Versionsnummer erhöhen, sonst bleibt die alte Version im Cache.
-const CACHE = 'happybri-v16';
-const FILES = ['./', 'index.html', 'style.css', 'predict.js', 'overview.js', 'app.js', 'meds.js', 'solids.js', 'popo.js', 'handover.js', 'db.js', 'import.js', 'export.js', 'growth.js', 'stats.js', 'report.js', 'sync.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
+const CACHE = 'happybri-v17';
+const FILES = ['./', 'index.html', 'style.css', 'predict.js', 'overview.js', 'app.js', 'layout.js', 'meds.js', 'solids.js', 'popo.js', 'handover.js', 'db.js', 'import.js', 'export.js', 'growth.js', 'stats.js', 'report.js', 'sync.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 // Firebase-Bibliothek (von Google geladen) ebenfalls ablegen, damit Login und Sync auch offline starten.
 const FIREBASE = ['app', 'auth', 'firestore'].map(n => `https://www.gstatic.com/firebasejs/11.10.0/firebase-${n}.js`);
 

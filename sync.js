@@ -31,6 +31,8 @@ window.Sync = { ready: true };
 window.Sync.saveProfile = p => { if (auth.currentUser) setDoc(doc(fs, 'settings', 'profile'), p).catch(err => console.error('Sync-Fehler', err)); };
 // Medikamentenliste (meds.js) ebenso nur in Firestore (settings/meds) und lokal
 window.Sync.saveMeds = items => { if (auth.currentUser) setDoc(doc(fs, 'settings', 'meds'), { items }).catch(err => console.error('Sync-Fehler', err)); };
+// Eigene Anordnung (layout.js) je Person in users/<uid>, neben dem Namen
+window.Sync.saveLayout = layout => { if (auth.currentUser) setDoc(doc(fs, 'users', auth.currentUser.uid), { layout }, { merge: true }).catch(err => console.error('Sync-Fehler', err)); };
 let stopListening = null, stopMeds = null;
 
 // Jede lokale Änderung geht zusätzlich an Firestore (nicht abwarten: offline wartet sie in der Warteschlange).
@@ -92,6 +94,11 @@ async function ensureName(user) {
 }
 
 async function startSync(user, name) {
+  getDoc(doc(fs, 'users', user.uid)).then(snap => {
+    const layout = snap.exists() && snap.data().layout;
+    if (layout && name) store.set('layout:' + name, JSON.stringify(layout));
+    if (window.onLayout) window.onLayout();
+  }).catch(() => {}); // offline: die lokal gemerkte Anordnung gilt weiter
   getDoc(doc(fs, 'settings', 'profile')).then(snap => {
     if (snap.exists()) { store.set('profile', JSON.stringify(snap.data())); if (window.onProfile) window.onProfile(); }
   }).catch(() => {}); // offline: das lokal gemerkte Profil gilt weiter
@@ -137,6 +144,7 @@ onAuthStateChanged(auth, async user => {
   window.currentUserName = name;
   if (name) store.set('userName', name);
   show(null);
+  if (window.onLayout) window.onLayout(); // Anordnung dieser Person (lokal gemerkt) gleich anwenden
   if (window.runPendingAction) window.runPendingAction(); // App-Shortcut erst nach dem Login ausführen
   $('#who').textContent = name ? `Angemeldet als ${name}` : 'Angemeldet';
   await startSync(user, name);

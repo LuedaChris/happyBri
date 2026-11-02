@@ -209,3 +209,16 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
   background: #2b3245; border-radius: 14px; padding: 8px 8px 8px 16px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
 #toast[hidden] { display: none; }
 #toast button { background: none; color: #8fb4ff; font-weight: 600; padding: 12px; }
+
+/* Eigene Anordnung (layout.js) */
+.hblock + .hblock { margin-top: 12px; }
+#homeBlocks #status, #homeBlocks .big.sleep { margin-bottom: 0; }
+.hblock:first-child > h2 { margin-top: 0; }
+#status[hidden] { display: none; }
+.lrow { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); padding: 4px 0; }
+.lrow label { flex: 1; display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 0; color: var(--text); font-size: 16px; }
+.lrow input { width: 24px; height: 24px; margin: 0; flex: none; }
+.lrow.off label { color: var(--dim); }
+.lrow button { width: 48px; height: 48px; border-radius: 12px; background: var(--more); font-size: 20px; }
+.lrow button:disabled { opacity: .25; }
+#layoutEd .seg button { padding: 10px 4px; font-size: 15px; }

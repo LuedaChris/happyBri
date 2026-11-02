@@ -15,28 +15,31 @@
 <div id="viewHome">
   <h1>happyBri</h1>
 
-  <div id="status"></div>
+  <!-- Bereiche der Startseite; Reihenfolge und Sichtbarkeit je Person (layout.js) -->
+  <div id="homeBlocks">
+  <section class="hblock" data-block="status"><div id="status"></div></section>
 
-  <button id="sleepBtn" class="big sleep"></button>
+  <section class="hblock" data-block="sleep"><button id="sleepBtn" class="big sleep"></button></section>
 
-  <div class="grid">
+  <section class="hblock" data-block="quick"><div class="grid">
     <button class="big feed" data-quick="bottle">🍼<span>Flasche</span></button>
     <button class="big feed" data-quick="solid">🥣<span>Beikost</span></button>
     <button class="big diaper" data-quick="diaper">🧷<span>Wickeln</span></button>
     <button class="big more" data-quick="more">➕<span>Mehr</span></button>
-  </div>
+  </div></section>
 
-  <h2>Heute</h2>
-  <div id="today"></div>
+  <section class="hblock" data-block="today"><h2>Heute</h2>
+  <div id="today"></div></section>
 
-  <h2>Letzte 24 Stunden</h2>
-  <div id="timeline"></div>
+  <section class="hblock" data-block="timeline"><h2>Letzte 24 Stunden</h2>
+  <div id="timeline"></div></section>
 
-  <h2>Verlauf</h2>
+  <section class="hblock" data-block="list"><h2>Verlauf</h2>
   <div id="list"></div>
-  <button id="moreBtn" class="link" hidden>Ältere Einträge laden</button>
+  <button id="moreBtn" class="link" hidden>Ältere Einträge laden</button></section>
+  </div>
   <p class="who"><span id="who"></span> · <button class="link inline" id="logoutBtn">Abmelden</button></p>
-  <p class="who"><button class="link inline" id="importBtn">Happy-Baby-Daten importieren</button> · <button class="link inline" id="exportBtn">Exportieren</button></p>
+  <p class="who"><button class="link inline" id="importBtn">Happy-Baby-Daten importieren</button> · <button class="link inline" id="exportBtn">Exportieren</button> · <button class="link inline" data-layout="home">Anordnen</button></p>
   <input type="file" id="importFile" hidden>
 </div>
 
@@ -155,6 +158,7 @@
 <script src="predict.js"></script>
 <script src="overview.js"></script>
 <script src="app.js"></script>
+<script src="layout.js"></script>
 <script src="meds.js"></script>
 <script src="solids.js"></script>
 <script src="popo.js"></script>
