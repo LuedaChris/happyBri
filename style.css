@@ -131,6 +131,14 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .sw.l50 { background: #b9d9ff; } .sw.lpc { background: #6a74c9; } .sw.pt { background: #ff8fb8; border-radius: 50%; width: 9px; }
 #toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
 
+/* Beikost: Gerichte als antippbare Chips (Mehrfachauswahl) */
+.sheet-label { color: var(--dim); font-size: 14px; margin: 4px 0 8px; }
+.sheet-label small { font-size: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; max-height: 210px; overflow-y: auto; }
+.chip { padding: 10px 14px; min-height: 44px; border-radius: 999px; background: var(--more); font-size: 16px; }
+.chip.on { background: var(--ok); font-weight: 600; }
+#dishAdd { width: 56px; font-size: 24px; }
+
 /* Wachfenster-Ampel (Zeile "Nächster Schlaf") */
 .ampel { display: block; height: 4px; border-radius: 2px; background: var(--line); margin-top: 4px; overflow: hidden; }
 .ampel i { display: block; height: 100%; border-radius: 2px; }

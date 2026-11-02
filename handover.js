@@ -13,7 +13,8 @@ function handoverLines(fromMs, toMs = Date.now()) {
 
   const bottles = of('feeding', 'Flasche'), solids = of('feeding', 'Beikost');
   lines.push(`🍼 Flasche: ${bottles.length}×${sum(bottles, 'ml') ? `, ${sum(bottles, 'ml')} ml` : ''}${bottles.length ? `, zuletzt ${when(bottles[0].start)}` : ''}`);
-  lines.push(`🥣 Beikost: ${solids.length}×${sum(solids, 'g') ? `, ${sum(solids, 'g')} g` : ''}${solids.length ? `, zuletzt ${when(solids[0].start)}` : ''}`);
+  const dishes = [...new Set(solids.slice().reverse().flatMap(dishesOf))]; // Gerichte in zeitlicher Reihenfolge (solids.js)
+  lines.push(`🥣 Beikost: ${solids.length}×${sum(solids, 'g') ? `, ${sum(solids, 'g')} g` : ''}${solids.length ? `, zuletzt ${when(solids[0].start)}` : ''}${dishes.length ? ` – ${dishes.join(', ')}` : ''}`);
 
   const diapers = of('diaper'), kinds = {};
   for (const e of diapers) kinds[e.title] = (kinds[e.title] || 0) + 1;

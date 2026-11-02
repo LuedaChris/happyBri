@@ -179,7 +179,7 @@ function moreSheet() {
 document.querySelectorAll('[data-quick]').forEach(b => (b.onclick = () => {
   const k = b.dataset.quick;
   if (k === 'bottle') amountSheet('Flasche', 'Flasche', [120, 150, 180], 'ml');
-  if (k === 'solid') amountSheet('Beikost', 'Beikost', [100, 150, 190, 250], 'g');
+  if (k === 'solid') solidSheet(); // mit Gerichte-Auswahl (solids.js)
   if (k === 'diaper') diaperSheet();
   if (k === 'more') moreSheet();
 }));

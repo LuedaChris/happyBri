@@ -188,6 +188,14 @@ Lehre: Beim Testen im Vorschau-Browser liefert der Service Worker nach einer Kor
 
 Goal-12-Entscheidungen: `predictNextSleep` liefert zusätzlich `wakeSince` (Ende des letzten Schlafs); die Zeile „Nächster Schlaf“ zeigt einen 4-px-Balken (Anteil = wach seit / vorhergesagtes Wachfenster) und rechts „wach h:mm von h:mm“. Status-Zeilen etwas enger (7 px statt 8 px Abstand), damit 5 Zeilen + Ampel auf 375×812 ohne Scrollen passen (gemessen: Buttons enden bei 741 px, Tab-Leiste beginnt bei 751 px). Fehlt `wakeSince` (ältere `predict.js` im Cache), erscheint die Zeile ohne Balken. Am PC geprüft (01.11.2026): 10/17/30 Min wach bei vorhergesagten 20 Min → grün 50 %, gelb 85 %, rot.
 
+### Goal 13 – Beikost mit Gerichten (vom Nutzer am 02.11.2026 gewünscht)
+- [ ] Das Beikost-Fenster zeigt bisher gegebene Gerichte als Auswahl (häufigste der letzten 30 Tage zuerst) mit Suche
+- [ ] Mehrere Gerichte gleichzeitig auswählbar; neues Gericht eintippen geht auch
+- [ ] Gespeichert wird ein Beikost-Eintrag wie bisher mit Menge (oder ohne Menge); die Gerichte stehen darin
+- [ ] Ohne Gericht bleibt es bei 2 Taps (Beikost → Menge)
+- [ ] Gerichte erscheinen im Verlauf, in der Übergabe und im Arzt-Bericht und kommen per Sync aufs andere Handy
+Entscheidungen: Gerichte stehen im Feld `note` des Beikost-Eintrags, durch „, “ getrennt (keine neue Datenstruktur: Export/Import/Sync laufen unverändert; die alten Happy-Baby-Notizen wie „Waffeln mit Apfelmus“ werden so automatisch zu Vorschlägen). Ein Eintrag für alles zusammen mit der Gesamtmenge. „+“ gilt beim Lesen ebenfalls als Trenner (die Eltern haben in Happy Baby mehrere Sachen so notiert, z. B. „Brei + Banane + Keks“); eingetipptes „Mango + Keks“ wird zu zwei Gerichten. Vorschläge werden aus allen Beikost-Einträgen berechnet (Groß-/Kleinschreibung zusammengefasst, neueste Schreibweise gewinnt).
+
 ## Aktueller Stand
 - **Stand 01.11.2026 nachts:** Goals 8–12 gebaut, am PC geprüft und hochgeladen (Service-Worker-Cache `happybri-v14`). Handy-Abnahme für Goals 6–12 steht aus. Offene Handy-Tests aus Goal 7: Vorhersage tagsüber anzeigen, Nachtragen aktualisiert die Vorhersage.
 - Goal 6: Code (`stats.js`, `growth.js`) ist geschrieben, am PC mit den echten Daten geprüft (7 Karten, Tages- und Wochenansicht, Perzentile: Gewicht 8,58 kg mit 11,9 Monaten = P37, Größe 76 cm mit 10,9 Monaten = P91; WHO-Median passt zu den „Altersdurchschnitt“-Werten von Happy Baby). Offen: Test auf dem Handy, Geburtsdatum eingeben.

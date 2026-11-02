@@ -78,6 +78,12 @@ function renderReport() {
   const diaper = perDay(e => e.type === 'diaper', recent);
   const stool = perDay(e => e.type === 'diaper' && (e.title === 'Kacka' || e.title === 'Beides'), recent);
   const h = min => fmtDur(Math.round(min));
+  // Häufigste Beikost-Gerichte im Zeitraum (solids.js)
+  const dishCount = new Map();
+  for (const e of recent.filter(e => e.type === 'feeding' && e.title === 'Beikost')) {
+    for (const d of dishesOf(e)) { const k = d.toLowerCase(); dishCount.set(k, { name: (dishCount.get(k) || {}).name || d, n: ((dishCount.get(k) || {}).n || 0) + 1 }); }
+  }
+  const topDishes = [...dishCount.values()].sort((a, b) => b.n - a.n).slice(0, 8).map(d => `${esc(d.name)} (${d.n}×)`).join(', ');
   html += rSection(`Schlaf (Ø pro Tag, ${sleepDays.length} Tage mit Einträgen)`, rTable(['', 'Wert'], [
     ['Gesamtschlaf', h(avgOf(sleepDays, r => r.nap + r.night)) + (ref ? ` (Richtwert ${ref.band[0] / 60}–${ref.band[1] / 60} Std, ${ref.src})` : '')],
     ['Nachtschlaf', h(avgOf(sleepDays, r => r.night))],
@@ -89,6 +95,7 @@ function renderReport() {
   html += rSection('Ernährung und Wickeln (Ø pro Tag, 14 Tage)', rTable(['', 'Wert'], [
     ['Flasche', bottle.days ? `${fmtNum(Math.round(bottle.amount))} ml in ${fmtNum(Math.round(bottle.count * 10) / 10)} Mahlzeiten` : '–'],
     ['Beikost', solid.days ? `${fmtNum(Math.round(solid.amount))} g in ${fmtNum(Math.round(solid.count * 10) / 10)} Mahlzeiten` : '–'],
+    ['Häufige Gerichte', topDishes || '–'],
     ['Wickel', diaper.days ? fmtNum(Math.round(diaper.count * 10) / 10) : '–'],
     ['davon mit Stuhl', stool.days ? fmtNum(Math.round(stool.count * 10) / 10) : '–'],
   ]));
