@@ -4,7 +4,7 @@
     {
       "name": "bri-dev",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8080"],
+      "runtimeArgs": [".claude/devserver.py"],
       "port": 8080
     }
   ]

@@ -67,7 +67,7 @@ Kommunikation und App-Oberfläche: Deutsch.
 - Baby heißt „Bri“ (Ersatz für `{babyName}`); die App heißt „happyBri“. GitHub-Repo: https://github.com/LuedaChris/happyBri (öffentlich, Pages-URL: https://luedachris.github.io/happyBri/). Beide Handys: Android (Samsung).
 - Füttern: Flasche 120/150/180 ml, Beikost 100/150/190/250 g, jeweils plus freie Mengeneingabe. Kein Stillen.
 - Wickeln: Pipi / Kacka / Beides. Kein „Trocken“-Button.
-- Lokal testen: `python -m http.server 8080` im Projektordner (`.claude/launch.json`, Name `bri-dev`).
+- Lokal testen: `python .claude/devserver.py` (Port 8080, sendet `Cache-Control: no-store`, damit der Vorschau-Browser nie alte Dateien nutzt; `.claude/launch.json`, Name `bri-dev`). Vor Tests trotzdem Service Worker abmelden und CacheStorage leeren.
 - Bei Änderungen an App-Dateien `CACHE` in `sw.js` hochzählen, sonst zeigt die installierte App die alte Version.
 - Zeiten werden als Ortszeit-Strings gespeichert wie in der CSV (keine Umrechnung nötig, Import/Export 1:1).
 
@@ -195,6 +195,16 @@ Goal-12-Entscheidungen: `predictNextSleep` liefert zusätzlich `wakeSince` (Ende
 - [ ] Ohne Gericht bleibt es bei 2 Taps (Beikost → Menge)
 - [ ] Gerichte erscheinen im Verlauf, in der Übergabe und im Arzt-Bericht und kommen per Sync aufs andere Handy
 Entscheidungen: Gerichte stehen im Feld `note` des Beikost-Eintrags, durch „, “ getrennt (keine neue Datenstruktur: Export/Import/Sync laufen unverändert; die alten Happy-Baby-Notizen wie „Waffeln mit Apfelmus“ werden so automatisch zu Vorschlägen). Ein Eintrag für alles zusammen mit der Gesamtmenge. „+“ gilt beim Lesen ebenfalls als Trenner (die Eltern haben in Happy Baby mehrere Sachen so notiert, z. B. „Brei + Banane + Keks“); eingetipptes „Mango + Keks“ wird zu zwei Gerichten. Vorschläge werden aus allen Beikost-Einträgen berechnet (Groß-/Kleinschreibung zusammengefasst, neueste Schreibweise gewinnt).
+
+### Goal 14 – Roter Popo & Ernährung (vom Nutzer am 02.11.2026 gewünscht)
+Anlass: Bri hat nach Stuhl öfter einen roten Popo; Vermutung: bestimmte Beikost (z. B. Fruchtsäure).
+- [ ] Wickeln-Fenster: „Popo: unauffällig (vorausgewählt) / leicht rot / wund“ und „dünn“; im Normalfall weiter 2 Taps
+- [ ] Popo-Status nachträglich im Bearbeiten-Fenster änderbar; im Verlauf sichtbar, wenn auffällig
+- [ ] Statistik-Karte „Popo & Ernährung“: je Zutat „danach rot“ gegen „sonst rot“ (mit Anzahlen), Zeitfenster 12/24/48 Std vor dem Stuhl, dünner Stuhl als eigener Vergleich
+- [ ] Popo-Tagebuch: jeder rote Popo mit den Gerichten im Zeitfenster davor
+- [ ] Hinweis „Auffälligkeit, kein Beweis“; Hinweis auf zu wenig Daten
+Entscheidungen: Gespeichert im vorhandenen Feld `rating` des Wickel-Eintrags (`unauffällig` | `leicht rot` | `wund`, bei Stuhl ggf. `, dünn` angehängt) – Export/Import/Sync ohne Umbau. Neue Wickel-Einträge bekommen immer einen Popo-Status (auch „unauffällig“), damit die Auswertung nur Windeln nutzt, bei denen wirklich hingeschaut wurde (alte Happy-Baby-Daten haben keinen Status und zählen nicht). Ausgewertet werden Stuhlwindeln (Kacka/Beides); „leicht rot“ und „wund“ zählen beide als „rot“. Zutaten = Wörter aus den Beikost-Gerichten (Goal 13) ohne Füllwörter/Marken, einfache Pluralangleichung (Bananen → Banane). Zutat erscheint erst ab 3 Stuhlwindeln mit ihr im Zeitfenster. Keine medizinischen Aussagen; Hinweis auf Kinderarzt, wenn der Popo länger wund bleibt.
+▲ nur für Zutaten, die auch ohne die stärkeren ▲-Zutaten auffällig bleiben (mind. 2-mal rot, +20 Prozentpunkte); sonst „meist zusammen mit …“. Am PC geprüft (02.11.2026) mit künstlichem Muster (Test-Stuhlwindeln 6 Std nach 151 echten Beikost-Mahlzeiten, rot nach Kiwi): Kiwi ▲ 8 von 16 vs. 0 von 135; Maistiere/Toast/Himbeere „meist zusammen mit Kiwi“. Wickeln-Fenster, Bearbeiten, Verlauf, Übergabe, Bericht geprüft; Testdaten entfernt. Code in `popo.js`; Wickeln-Fenster in `app.js`.
 
 ## Aktueller Stand
 - **Stand 01.11.2026 nachts:** Goals 8–12 gebaut, am PC geprüft und hochgeladen (Service-Worker-Cache `happybri-v14`). Handy-Abnahme für Goals 6–12 steht aus. Offene Handy-Tests aus Goal 7: Vorhersage tagsüber anzeigen, Nachtragen aktualisiert die Vorhersage.

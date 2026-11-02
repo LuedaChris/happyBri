@@ -66,6 +66,10 @@ function describe(e) {
     sub = e.end ? fmtDur(e.durationMin ?? minutesBetween(e.start, e.end)) + ` (bis ${fmtTime(e.end)})` : 'läuft …';
   } else if (e.note) sub = e.note;
   else if (e.substance) sub = e.substance;
+  if (e.type === 'diaper' && e.rating && e.rating !== 'unauffällig') { // auffälliger Popo / dünner Stuhl
+    const r = e.rating.replace(/^unauffällig, /, '');
+    sub = sub ? `${r} · ${sub}` : r;
+  }
   if (e.createdBy) sub = sub ? `${sub} · ${e.createdBy}` : e.createdBy;
   return { main, sub };
 }
@@ -146,12 +150,31 @@ function amountSheet(title, titleText, values, unit) {
   });
 }
 
+// Wickeln mit Popo-Status (Goal 14): "unauffällig" ist vorausgewählt, also bleibt es im Normalfall bei 2 Taps.
+// Gespeichert in `rating`: "unauffällig" | "leicht rot" | "wund", bei Stuhl ggf. mit ", dünn" (Auswertung in popo.js).
 function diaperSheet() {
+  let popo = 'unauffällig', thin = false;
   openQuick('Wickeln', body => {
-    body.innerHTML = `<div class="grid"><button class="big" data-t="Pipi">💧 Pipi</button><button class="big" data-t="Kacka">💩 Kacka</button></div>
+    body.innerHTML = `<p class="sheet-label">Popo <small>bei Bedarf vorher antippen</small></p>
+      <div class="chips" id="popoChips"></div>
+      <div class="grid"><button class="big" data-t="Pipi">💧 Pipi</button><button class="big" data-t="Kacka">💩 Kacka</button></div>
       <div class="grid"><button class="big" data-t="Beides">💧💩 Beides</button></div>`;
-    body.querySelectorAll('[data-t]').forEach(b => (b.onclick = () =>
-      quickSave(newEntry('diaper', b.dataset.t, quickStart()), `${b.dataset.t} gespeichert`)));
+    const draw = () => {
+      $('#popoChips').innerHTML = ['unauffällig', 'leicht rot', 'wund']
+        .map(p => `<button class="chip${p === popo ? ' on' : ''}" data-popo="${p}">${p}</button>`).join('')
+        + `<button class="chip${thin ? ' on' : ''}" data-thin>dünner Stuhl</button>`;
+    };
+    $('#popoChips').onclick = ev => {
+      const b = ev.target.closest('button');
+      if (!b) return;
+      if (b.dataset.popo) popo = b.dataset.popo; else thin = !thin;
+      draw();
+    };
+    draw();
+    body.querySelectorAll('[data-t]').forEach(b => (b.onclick = () => {
+      const t = b.dataset.t, rating = t !== 'Pipi' && thin ? `${popo}, dünn` : popo;
+      quickSave(newEntry('diaper', t, quickStart(), { rating }), `${t} gespeichert${rating === 'unauffällig' ? '' : ` (${rating})`}`);
+    }));
   });
 }
 
@@ -227,18 +250,31 @@ function openEdit(entry, isNew = false) {
   f('fEnd').value = entry.end || '';
   f('fAmount').value = entry.amount ?? '';
   f('fUnit').value = entry.unit || '';
-  f('fRating').value = entry.rating || '';
   f('fNote').value = entry.note || '';
   f('fDelete').hidden = isNew;
   syncTypeFields();
+  // Bewertung erst nach dem Aufbau der passenden Auswahl setzen; unbekannte Werte (z. B. aus dem Import) als Option ergänzen
+  if (entry.rating && ![...f('fRating').options].some(o => o.value === entry.rating)) f('fRating').add(new Option(entry.rating, entry.rating));
+  f('fRating').value = entry.rating || '';
   $('#edit').showModal();
 }
 
+// Auswahl im Feld "Bewertung" je Art: Schlafqualität bzw. Popo/Stuhl beim Wickeln
+const RATING_OPTIONS = {
+  sleep: { label: 'Bewertung', options: ['Super', 'Okay', 'Nicht gut'] },
+  diaper: { label: 'Popo / Stuhl', options: ['unauffällig', 'leicht rot', 'wund', 'unauffällig, dünn', 'leicht rot, dünn', 'wund, dünn'] },
+};
 function syncTypeFields() {
   const t = f('fType').value;
   const titles = t === 'medication' ? (getMeds() || []).map(m => m.name) : TYPES[t].titles;
   f('titles').innerHTML = titles.map(x => `<option value="${esc(x)}">`).join('');
-  f('fRatingWrap').hidden = t !== 'sleep';
+  const r = RATING_OPTIONS[t], current = f('fRating').value;
+  f('fRatingWrap').hidden = !r;
+  if (r) {
+    f('fRatingLabel').textContent = r.label;
+    f('fRating').innerHTML = '<option value="">–</option>' + r.options.map(o => `<option>${o}</option>`).join('');
+    f('fRating').value = r.options.includes(current) ? current : '';
+  }
 }
 f('fType').onchange = () => {
   const t = f('fType').value;

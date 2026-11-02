@@ -98,6 +98,10 @@ function renderReport() {
     ['Häufige Gerichte', topDishes || '–'],
     ['Wickel', diaper.days ? fmtNum(Math.round(diaper.count * 10) / 10) : '–'],
     ['davon mit Stuhl', stool.days ? fmtNum(Math.round(stool.count * 10) / 10) : '–'],
+    ['Popo rot nach Stuhl', (() => { // nur Stuhlwindeln mit erfasstem Popo-Status (popo.js)
+      const rated = recent.filter(e => e.type === 'diaper' && (e.title === 'Kacka' || e.title === 'Beides') && popoState(e));
+      return rated.length ? pctText({ n: rated.length, red: rated.filter(e => popoState(e) !== 'ok').length }) : '–';
+    })()],
   ]));
 
   // Krankheit: Medikamente und Temperaturen der letzten 28 Tage

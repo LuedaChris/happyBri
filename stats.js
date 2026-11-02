@@ -243,6 +243,7 @@ function renderStats() {
   }), `Ø ${Math.round(periodAvg(rows, r => perMin(r, key)))} ${unit}${avgNote()}`);
   html += feedChart('bottle', 'Flasche', 'ml', 'bottle');
   html += feedChart('solid', 'Beikost', 'g', 'solid');
+  html += popoCard(); // Roter Popo & Ernährung (popo.js)
 
   if (profile.birth) {
     html += growthCard('weight', 'weight', 'Gewicht (kg)', 'kg', 1, profile);
@@ -269,6 +270,8 @@ $('#statsBody').onclick = ev => {
   if (t.dataset.editbirth !== undefined) saveProfile({ ...getProfile(), birth: '' });
   if (t.dataset.backtest !== undefined) openBacktest();
   if (t.dataset.report !== undefined) openReport();
+  if (t.dataset.popowin) { popoWindow = Number(t.dataset.popowin); renderStats(); }
+  if (t.dataset.popodiary !== undefined) openPopoDiary();
 };
 
 // Backtest der Schlafvorhersage (predict.js) im Dialog; Stichtag wählbar, Standard: jetzt

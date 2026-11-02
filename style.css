@@ -138,6 +138,10 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .chip { padding: 10px 14px; min-height: 44px; border-radius: 999px; background: var(--more); font-size: 16px; }
 .chip.on { background: var(--ok); font-weight: 600; }
 #dishAdd { width: 56px; font-size: 24px; }
+/* Popo-Status beim Wickeln: rot/wund farblich abgesetzt */
+.chip.on[data-popo="leicht rot"] { background: #b8862a; }
+.chip.on[data-popo="wund"] { background: #c0505a; }
+.chip.on[data-thin] { background: #6a5acd; }
 
 /* Wachfenster-Ampel (Zeile "Nächster Schlaf") */
 .ampel { display: block; height: 4px; border-radius: 2px; background: var(--line); margin-top: 4px; overflow: hidden; }
@@ -163,6 +167,7 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .handover p { margin: 4px 0; font-size: 15px; }
 .handover p:first-child { color: var(--dim); font-size: 13px; }
 #toastUndo[hidden] { display: none; }
+.popodiary p:first-child { color: var(--text); font-size: 15px; }
 
 /* Bericht für den Kinderarzt (Bildschirm) */
 #reportView { position: fixed; inset: 0; z-index: 8; /* über Tab-Leiste, unter Hinweis (Toast) */ overflow-y: auto; background: var(--bg); color: var(--text);

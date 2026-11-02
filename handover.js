@@ -18,7 +18,8 @@ function handoverLines(fromMs, toMs = Date.now()) {
 
   const diapers = of('diaper'), kinds = {};
   for (const e of diapers) kinds[e.title] = (kinds[e.title] || 0) + 1;
-  lines.push(`🧷 Wickel: ${diapers.length}×${diapers.length ? ` (${Object.entries(kinds).map(([k, n]) => `${k} ${n}`).join(', ')}), zuletzt ${when(diapers[0].start)}` : ''}`);
+  const red = diapers.filter(e => popoState(e) === 'leicht rot' || popoState(e) === 'wund').length; // popo.js
+  lines.push(`🧷 Wickel: ${diapers.length}×${diapers.length ? ` (${Object.entries(kinds).map(([k, n]) => `${k} ${n}`).join(', ')}), zuletzt ${when(diapers[0].start)}` : ''}${red ? `, davon ${red}× Popo rot` : ''}`);
 
   // Schlaf im Zeitraum: Netto-Dauer anteilig wie in der Statistik (aggregate in stats.js)
   const r = aggregate([{ t0: fromMs, t1: toMs, div: 1 }])[0];
