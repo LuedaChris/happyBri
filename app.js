@@ -110,6 +110,7 @@ function render(fromTimer = false) {
   renderOverview();
   // Statistik nur bei echten Änderungen neu zeichnen, nicht im 30-Sek.-Takt (sonst springen Eingabefelder zurück)
   if (!fromTimer && !$('#viewStats').hidden) renderStats();
+  if (!fromTimer && !$('#viewDays').hidden) renderDays();
 
   // Schlaf-Button
   const run = runningSleep();

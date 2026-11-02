@@ -72,34 +72,59 @@ function predictionRow(row) {
   return row('🔮', p.slot ? `Nächster Schlaf · ${slotName(p.slot)}` : 'Nächster Schlaf', value, detail);
 }
 
-// Tagessummen für den heutigen Kalendertag (ab 00:00). Schlaf, der über Mitternacht geht, zählt nur mit dem Teil von heute.
-function renderToday() {
-  const day = nowLocal().slice(0, 10);
-  const d0 = ts(day + 'T00:00'), d1 = Date.now();
-  const earliest = toLocal(new Date(d0 - 36 * 3600e3)).slice(0, 10); // früher begonnener Schlaf kann noch hineinreichen
-  let feeds = 0, ml = 0, diapers = 0, sleepMin = 0;
+// Tagessummen je Kalendertag (ab 00:00) für eine Liste von Tagen "YYYY-MM-DD". Schlaf, der über Mitternacht geht, zählt
+// anteilig bei beiden Tagen; ganz an einem Tag liegende Schläfe zählen mit der Netto-Dauer aus dem Eintrag.
+// Gemeinsame Grundlage für "Heute" auf dem Startbildschirm und den Reiter "Übersicht" (renderDays), damit die Zahlen übereinstimmen.
+function dayTotals(days) {
+  const res = {}, now = Date.now(), today = nowLocal().slice(0, 10);
+  for (const d of days) res[d] = { feeds: 0, ml: 0, diapers: 0, sleepMin: 0 };
+  const oldest = days.reduce((a, b) => (a < b ? a : b));
+  const earliest = toLocal(new Date(ts(oldest + 'T00:00') - 36 * 3600e3)).slice(0, 10); // früher begonnener Schlaf kann hineinreichen
   for (const e of entries) {
-    if (e.start.slice(0, 10) < earliest) break; // Liste ist nach Start sortiert
-    if (e.type === 'feeding' && e.start.slice(0, 10) === day) {
-      feeds++;
-      if (e.unit === 'ml' && e.amount) ml += e.amount;
-    } else if (e.type === 'diaper' && e.start.slice(0, 10) === day) {
-      diapers++;
+    const day = e.start.slice(0, 10);
+    if (day < earliest) break; // Liste ist nach Start sortiert
+    const r = res[day];
+    if (e.type === 'feeding' && r) {
+      r.feeds++;
+      if (e.unit === 'ml' && e.amount) r.ml += e.amount;
+    } else if (e.type === 'diaper' && r) {
+      r.diapers++;
     } else if (e.type === 'sleep') {
-      const s = ts(e.start), en = e.end ? ts(e.end) : d1;
-      const from = Math.max(s, d0), to = Math.min(en, d1);
-      if (to <= from) continue;
-      const whole = s >= d0 && en <= d1 && e.durationMin != null; // ganz heute: Netto-Dauer ohne Pausen nehmen
-      sleepMin += whole ? e.durationMin : Math.round((to - from) / 60000);
+      const s = ts(e.start), en = e.end ? ts(e.end) : now;
+      for (let d = day, n = 0; d <= (e.end ? e.end.slice(0, 10) : today) && n < 40; d = shiftDay(d, 1), n++) {
+        if (!res[d]) continue;
+        const d0 = ts(d + 'T00:00'), d1 = ts(shiftDay(d, 1) + 'T00:00');
+        const from = Math.max(s, d0), to = Math.min(en, d1, now);
+        if (to <= from) continue;
+        const whole = s >= d0 && en <= d1 && en <= now && e.durationMin != null;
+        res[d].sleepMin += whole ? e.durationMin : Math.round((to - from) / 60000);
+      }
     }
   }
-  const tile = (icon, big, small) => `<div><span class="ic">${icon}</span><b>${big}</b><small>${small}</small></div>`;
-  $('#today').innerHTML =
-    tile('🍼', feeds, ml ? `Fütterungen · ${ml} ml` : 'Fütterungen') +
-    tile('🧷', diapers, 'Wickel') +
-    tile('😴', fmtDur(sleepMin), 'Schlaf');
+  return res;
 }
 
+const dayTile = (icon, big, small) => `<div><span class="ic">${icon}</span><b>${big}</b><small>${small}</small></div>`;
+const dayTiles = t => dayTile('🍼', t.feeds, t.ml ? `Fütterungen · ${t.ml} ml` : 'Fütterungen') + dayTile('🧷', t.diapers, 'Wickel') + dayTile('😴', fmtDur(t.sleepMin), 'Schlaf');
+
+function renderToday() {
+  const day = nowLocal().slice(0, 10);
+  $('#today').innerHTML = dayTiles(dayTotals([day])[day]);
+}
+
+// Reiter "Übersicht": je Tag dieselben drei Kacheln wie bei "Heute", neueste zuerst; Antippen öffnet den Tag im Verlauf
+let daysShown = 14;
+function renderDays() {
+  const today = nowLocal().slice(0, 10);
+  const first = entries.length ? entries[entries.length - 1].start.slice(0, 10) : today; // ältester Eintrag
+  const days = [];
+  for (let d = today; d >= first && days.length < daysShown; d = shiftDay(d, -1)) days.push(d);
+  const totals = dayTotals(days);
+  $('#daysBody').innerHTML = days.map(d => `<button class="daycard" data-day="${d}"><div class="dayhead"><b>${fmtDay(d + 'T00:00')}</b>
+      <small>${new Date(d + 'T12:00').toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' })}</small></div>
+      <div class="daytiles">${dayTiles(totals[d])}</div></button>`).join('')
+    + (days[days.length - 1] > first ? '<button class="link" data-moredays>Ältere Tage laden</button>' : '');
+}
 // Zeitstrahl: drei Bahnen (Schlaf als Balken, Füttern und Wickeln als Punkte), links vor 24 Std, rechts jetzt.
 function renderTimeline() {
   const t1 = Date.now(), t0 = t1 - MS_DAY;

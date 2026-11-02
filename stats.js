@@ -301,11 +301,25 @@ function saveProfile(p) {
 }
 window.onProfile = () => { if (!$('#viewStats').hidden) renderStats(); }; // sync.js ruft das, wenn das Profil aus der Cloud kam
 
-document.querySelectorAll('#tabs button').forEach(b => (b.onclick = () => {
-  const stats = b.dataset.view === 'stats';
-  $('#viewHome').hidden = stats;
-  $('#viewStats').hidden = !stats;
-  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+$('#daysBody').onclick = ev => {
+  if (ev.target.closest('[data-moredays]')) { daysShown += 14; renderDays(); return; }
+  const card = ev.target.closest('[data-day]');
+  if (!card) return;
+  hist.day = card.dataset.day; hist.type = 'all'; shown = 40; // Tag im Verlauf zeigen (app.js)
+  drawHistBar();
+  showView('home');
+  render();
+  $('#histBar').scrollIntoView();
+};
+
+// Reiter wechseln: Start / Übersicht / Statistik
+function showView(view) {
+  $('#viewHome').hidden = view !== 'home';
+  $('#viewDays').hidden = view !== 'days';
+  $('#viewStats').hidden = view !== 'stats';
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x.dataset.view === view));
   window.scrollTo(0, 0);
-  if (stats) renderStats();
-}));
+  if (view === 'days') renderDays();
+  if (view === 'stats') renderStats();
+}
+document.querySelectorAll('#tabs button').forEach(b => (b.onclick = () => showView(b.dataset.view)));

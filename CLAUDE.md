@@ -225,6 +225,13 @@ Entscheidungen: Code in `quotes.js`. 35 Sprüche, **vom Nutzer vorab abgesegnet*
 - [ ] Art und Tag lassen sich kombinieren; ohne Auswahl sieht der Verlauf aus wie vorher
 Entscheidungen: Code in `app.js` (`hist`, `histMatch`, `drawHistBar`). Gruppen: Medizin = Medikament + Temperatur, Wachstum = Gewicht + Größe, Sonstiges = Sonstiges + Meilenstein. Ein Eintrag zählt zu dem Tag, an dem er beginnt (Nachtschlaf über Mitternacht steht am Starttag). Im Tag-Modus werden alle Einträge des Tages gezeigt (kein „Ältere laden“). Der Filter wird nicht gespeichert und ist nach dem Neustart zurückgesetzt. Am PC geprüft (02.11.2026): Art, Tag, ‹ ›, Datumsfeld, Kombination, leere Auswahl, Rückkehr zu „Alle“. **Nicht geprüft:** Handy.
 
+### Goal 18 – Reiter „Übersicht“ (vom Nutzer am 02.11.2026 gewünscht)
+- [ ] Dritter Reiter „Übersicht“ (Navigation: Start / Übersicht / Statistik)
+- [ ] Je Tag die drei Kacheln wie bei „Heute“ (Fütterungen mit ml, Wickel, Schlaf), neueste zuerst, 14 Tage, „Ältere Tage laden“
+- [ ] Zahlen stimmen mit „Heute“ und der Statistik überein
+- [ ] Antippen eines Tages öffnet ihn im Verlauf auf der Startseite (Tag-Filter aus Goal 17)
+Entscheidungen: `dayTotals(days)` in `overview.js` ist die gemeinsame Rechnung für „Heute“ und „Übersicht“ (Schlaf über Mitternacht anteilig, ganz an einem Tag liegende Schläfe mit Netto-Dauer). Reiterwechsel über `showView()` in `stats.js`. Am PC geprüft (02.11.2026): Füttern/Wickeln für 8 Tage exakt gegen unabhängige Zählung, Schlaf gegen `aggregate()` der Statistik (max. 1 Min Rundung), Nachladen, Antippen → Verlauf. **Nicht geprüft:** Handy.
+
 ## Aktueller Stand
 - **Stand 01.11.2026 nachts:** Goals 8–12 gebaut, am PC geprüft und hochgeladen (Service-Worker-Cache `happybri-v14`). Handy-Abnahme für Goals 6–12 steht aus. Offene Handy-Tests aus Goal 7: Vorhersage tagsüber anzeigen, Nachtragen aktualisiert die Vorhersage.
 - Goal 6: Code (`stats.js`, `growth.js`) ist geschrieben, am PC mit den echten Daten geprüft (7 Karten, Tages- und Wochenansicht, Perzentile: Gewicht 8,58 kg mit 11,9 Monaten = P37, Größe 76 cm mit 10,9 Monaten = P91; WHO-Median passt zu den „Altersdurchschnitt“-Werten von Happy Baby). Offen: Test auf dem Handy, Geburtsdatum eingeben.
