@@ -222,3 +222,6 @@ main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .lrow button { width: 48px; height: 48px; border-radius: 12px; background: var(--more); font-size: 20px; }
 .lrow button:disabled { opacity: .25; }
 #layoutEd .seg button { padding: 10px 4px; font-size: 15px; }
+
+/* Tagesspruch */
+#quote { background: var(--card); border-radius: 14px; padding: 16px 18px; text-align: center; font-size: 17px; line-height: 1.4; color: var(--text); font-style: italic; }

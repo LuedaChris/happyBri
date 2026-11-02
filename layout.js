@@ -5,7 +5,7 @@
 const LAYOUT_SECTIONS = {
   home: { label: 'Start', items: [
     ['status', 'Status-Karte'], ['sleep', 'Schlaf-Knopf'], ['quick', 'Knöpfe Flasche / Beikost / Wickeln / Mehr'],
-    ['today', 'Heute'], ['timeline', 'Letzte 24 Stunden'], ['list', 'Verlauf'],
+    ['today', 'Heute'], ['timeline', 'Letzte 24 Stunden'], ['quote', 'Tagesspruch'], ['list', 'Verlauf'],
   ] },
   status: { label: 'Status', items: [
     ['feed', '🍼 Letzte Fütterung'], ['diaper', '🧷 Letzter Wickel'], ['sleep', '😴 Schlaf'],

@@ -136,4 +136,5 @@ function renderOverview() {
   renderStatus();
   renderToday();
   renderTimeline();
+  if (typeof renderQuote === 'function') renderQuote(); // quotes.js
 }
